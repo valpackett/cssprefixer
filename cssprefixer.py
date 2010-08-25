@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 # CSSPrefixer
 # Copyright 2010 MyFreeWeb <me@myfreeweb.ru>
 
@@ -13,20 +14,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import cssutils
+import sys
 
-from rules import rules as tr_rules
+import cssprefixer
 
-def process(string):
-    parser = cssutils.CSSParser()
-    sheet = parser.parseString(string)
-    for ruleset in sheet.cssRules:
-        for rule in ruleset.style.children():
-            try:
-                processor = tr_rules[rule.name](rule)
-                [ruleset.style.setProperty(prop) for prop in processor.get_prefixed_props()]
-                sheet.cssText += processor.pure_css_hook()
-            except KeyError:
-                pass
-
-    return sheet
+if __name__ == '__main__':
+    cssprefixer.process(open(sys.argv[1]).read())
