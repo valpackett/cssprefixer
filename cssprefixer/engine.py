@@ -18,7 +18,11 @@ import cssutils
 from rules import rules as tr_rules
 
 def process(string, debug=False):
-    parser = cssutils.CSSParser()
+    if debug:
+        loglevel = 'info'
+    else:
+        loglevel = 'error'
+    parser = cssutils.CSSParser(loglevel=loglevel)
     sheet = parser.parseString(string)
     for ruleset in sheet.cssRules:
         for rule in ruleset.style.children():
