@@ -17,7 +17,7 @@ import cssutils
 
 from rules import rules as tr_rules
 
-def process(string):
+def process(string, debug=False):
     parser = cssutils.CSSParser()
     sheet = parser.parseString(string)
     for ruleset in sheet.cssRules:
@@ -26,7 +26,8 @@ def process(string):
                 processor = tr_rules[rule.name](rule)
                 [ruleset.style.setProperty(prop) for prop in processor.get_prefixed_props()]
                 sheet.cssText += processor.pure_css_hook()
-            except KeyError:
-                pass
+            except: # Comments, etc.
+                if debug:
+                    print 'warning with ' + str(rule)
 
     return sheet
