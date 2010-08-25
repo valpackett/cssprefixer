@@ -45,9 +45,42 @@ class FullReplacementRule(BaseReplacementRule):
 
     vendor_prefixes = BaseReplacementRule.vendor_prefixes + ['o']
 
+class WebkitReplacementRule(BaseReplacementRule):
+    vendor_prefixes = ['webkit']
+
+class OperaAndIEReplacementRule(BaseReplacementRule):
+    vendor_prefixes = ['o', 'ms']
+
 rules = {
     'border-radius': BaseReplacementRule,
+    'border-image': BaseReplacementRule,
     'box-shadow': BaseReplacementRule,
+    'box-sizing': BaseReplacementRule,
+    'user-select': BaseReplacementRule,
+    'user-modify': BaseReplacementRule,
+    'margin-start': BaseReplacementRule,
+    'margin-end': BaseReplacementRule,
+    'padding-start': BaseReplacementRule,
+    'padding-end': BaseReplacementRule,
+    'column-count': BaseReplacementRule,
+    'column-gap': BaseReplacementRule,
+    'column-rule': BaseReplacementRule,
+    'column-rule-color': BaseReplacementRule,
+    'column-rule-style': BaseReplacementRule,
+    'column-rule-width': BaseReplacementRule,
+    'column-width': BaseReplacementRule,
+
+    'background-clip': WebkitReplacementRule,
+    'background-origin': WebkitReplacementRule,
+    'background-size': WebkitReplacementRule,
+
+    'text-overflow': OperaAndIEReplacementRule,
+
     'transition': FullReplacementRule,
+    'transition-delay': FullReplacementRule,
+    'transition-duration': FullReplacementRule,
+    'transition-property': FullReplacementRule,
+    'transition-timing-function': FullReplacementRule,
     'transform': FullReplacementRule,
+    'transform-origin': FullReplacementRule,
 }
