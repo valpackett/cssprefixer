@@ -20,14 +20,22 @@ if __name__ == '__main__':
     if len(sys.argv) > 1:
         import cssprefixer
         result = ''
-        if '--debug' in sys.argv:
-            debug = True
-        else:
-            debug = False
+        debug = minify = False
+        options = ['debug', 'minify']
+
+        # Two separate loops because user wants
+        # to specify options *after* filenames
+        for arg in sys.argv[1:]:
+            oarg = arg.replace('--', '')
+            if oarg in options:
+                globals()[oarg] = True
 
         for arg in sys.argv[1:]:
-            if arg != '--debug':
-                result += cssprefixer.process(open(arg, 'r').read(), debug).cssText
+            if arg[:2] != '--':
+                result += cssprefixer.process(open(arg, 'r').read(), debug, minify).cssText
         print result
     else:
-        print "Usage: cssprefixer.py <filenames> --debug"
+        print "Usage: cssprefixer.py <filenames> <options>"
+        sys.stdout.write("Options: ")
+        [sys.stdout.write(opt + ' ') for opt in options.iterkeys()]
+        sys.stdout.write("\n")
