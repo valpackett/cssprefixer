@@ -32,7 +32,7 @@ if __name__ == '__main__':
 
         for arg in sys.argv[1:]:
             if arg[:2] != '--':
-                result += cssprefixer.process(open(arg, 'r').read(), debug, minify).cssText
+                result += cssprefixer.process(open(arg, 'r').read(), debug, minify)
         print result
     else:
         print "Usage: cssprefixer.py <filenames> <options>"

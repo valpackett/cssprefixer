@@ -26,6 +26,7 @@ def process(string, debug=False, minify=False):
     if minify:
         cssutils.ser.prefs.useMinified()
     sheet = parser.parseString(string)
+    result = ''
     for ruleset in sheet.cssRules:
         for rule in ruleset.style.children():
             try:
@@ -36,4 +37,8 @@ def process(string, debug=False, minify=False):
                 if debug:
                     print 'warning with ' + str(rule)
 
-    return sheet
+        result += ruleset.cssText
+
+    # Not using sheet.cssText - it's buggy:
+    # it skips some prefixed properties.
+    return result
