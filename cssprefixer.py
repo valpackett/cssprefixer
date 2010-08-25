@@ -19,4 +19,10 @@ import sys
 import cssprefixer
 
 if __name__ == '__main__':
-    cssprefixer.process(open(sys.argv[1]).read())
+    if len(sys.argv) > 1:
+        result = ''
+        for filename in sys.argv[1:]:
+            result += cssprefixer.process(open(filename, 'r').read()).cssText
+        print result
+    else:
+        print "Usage: cssprefixer.py <filenames>"
