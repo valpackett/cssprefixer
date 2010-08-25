@@ -15,5 +15,13 @@ setup(name='cssprefixer',
       url='http://github.com/myfreeweb/cssprefixer',
       packages=['cssprefixer'],
       scripts=['cssprefixer.py'],
+      classifiers = [
+        'Environment :: Web Environment',
+        'Intended Audience :: Developers',
+        'Operating System :: OS Independent',
+        'Programming Language :: Python',
+        'Topic :: Internet :: WWW/HTTP',
+        'Topic :: Software Development :: Libraries',
+      ],
       package_data={},
 )
