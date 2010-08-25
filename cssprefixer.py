@@ -16,10 +16,9 @@
 
 import sys
 
-import cssprefixer
-
 if __name__ == '__main__':
     if len(sys.argv) > 1:
+        import cssprefixer
         result = ''
         for filename in sys.argv[1:]:
             result += cssprefixer.process(open(filename, 'r').read()).cssText
