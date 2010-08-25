@@ -11,6 +11,5 @@ class PrefixerTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('a{transform: rotate(10deg)}', minify=True),
                          'a{transform:rotate(10deg);-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg)}')
 
-
 if __name__ == '__main__':
     unittest.main()

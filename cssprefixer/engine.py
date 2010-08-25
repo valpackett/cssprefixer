@@ -28,16 +28,16 @@ def process(string, debug=False, minify=False):
     sheet = parser.parseString(string)
     result = ''
     for ruleset in sheet.cssRules:
-        for rule in ruleset.style.children():
-            try:
-                processor = tr_rules[rule.name](rule)
-                [ruleset.style.setProperty(prop) for prop in processor.get_prefixed_props()]
-                sheet.cssText += processor.pure_css_hook()
-            except: # Comments, etc.
-                if debug:
-                    print 'warning with ' + str(rule)
-
-        result += ruleset.cssText
+        if hasattr(ruleset, 'style'): # Comments doesn't
+            for rule in ruleset.style.children():
+                try:
+                    processor = tr_rules[rule.name](rule)
+                    [ruleset.style.setProperty(prop) for prop in processor.get_prefixed_props()]
+                    sheet.cssText += processor.pure_css_hook()
+                except: # Comments, etc.
+                    if debug:
+                        print 'warning with ' + str(rule)
+            result += ruleset.cssText
 
     # Not using sheet.cssText - it's buggy:
     # it skips some prefixed properties.
