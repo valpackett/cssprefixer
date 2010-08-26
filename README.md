@@ -1,5 +1,5 @@
 # CSSPrefixer #
-A tool that rewrites your CSS files, adding vendor-prefixed versions of (popular) CSS3 rules. It also can combine and minify them. **Keep your styles clean!**
+A tool that rewrites your CSS files, adding vendor-prefixed versions of (popular) CSS3 rules. It also can combine and minify your stylesheets. **Keep your styles clean!**
 
 For example, this
     #wrapper {
