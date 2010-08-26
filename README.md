@@ -27,7 +27,7 @@ Requires [cssutils](http://cthedot.de/cssutils/).
 ## How to use ##
 ### From console ###
 Like this:
-`cssprefixer.py my1.css my2.css --minify > result.css`
+`cssprefixer my1.css my2.css --minify > result.css`
 
 ### From Python ###
     import cssprefixer
