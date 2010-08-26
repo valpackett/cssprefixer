@@ -16,12 +16,13 @@
 
 import sys
 
+options = ['debug', 'minify']
+
 if __name__ == '__main__':
     if len(sys.argv) > 1:
         import cssprefixer
         result = ''
         debug = minify = False
-        options = ['debug', 'minify']
 
         # Two separate loops because user wants
         # to specify options *after* filenames
@@ -36,6 +37,4 @@ if __name__ == '__main__':
         print result
     else:
         print "Usage: cssprefixer <filenames> <options>"
-        sys.stdout.write("Options: ")
-        [sys.stdout.write(opt + ' ') for opt in options.iterkeys()]
-        sys.stdout.write("\n")
+        print "Options:" + reduce(lambda a, b: '%s --%s' % (a, b), options, '') # Javascript's Array.join, haha

@@ -24,11 +24,11 @@ class BaseReplacementRule(object):
     def get_prefixed_props(self):
         props = []
         for prefix in self.vendor_prefixes:
-            props += [cssutils.css.Property(
+            props.append(cssutils.css.Property(
                 name='-%s-%s' % (prefix, self.prop.name),
                 value=self.prop.value,
                 priority=self.prop.priority
-                )]
+                ))
         return props
 
     def pure_css_hook(self):
@@ -63,11 +63,11 @@ class BorderRadiusReplacementRule(BaseReplacementRule):
                .replace('top-right-radius', 'radius-topright') \
                .replace('bottom-right-radius', 'radius-bottomright') \
                .replace('bottom-left-radius', 'radius-bottomleft')
-        props += [cssutils.css.Property(
+        props.append(cssutils.css.Property(
             name=name,
             value=self.prop.value,
             priority=self.prop.priority
-            )]
+            ))
         return props
 
 rules = {
