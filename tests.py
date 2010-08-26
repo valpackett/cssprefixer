@@ -19,5 +19,9 @@ class PrefixerTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('a{text-overflow: ellipsis}', minify=True),
                          'a{text-overflow:ellipsis;-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis}')
 
+    def test_moz_border_radius(self):
+        self.assertEqual(cssprefixer.process('a{border-top-left-radius: 1em;border-top-right-radius: 1em;border-bottom-right-radius: 1em;border-bottom-left-radius: 1em;}', minify=True),
+                         'a{border-top-left-radius:1em;border-top-right-radius:1em;border-bottom-right-radius:1em;border-bottom-left-radius:1em;-webkit-border-top-left-radius:1em;-moz-border-radius-topleft:1em;-webkit-border-top-right-radius:1em;-moz-border-radius-topright:1em;-webkit-border-bottom-right-radius:1em;-moz-border-radius-bottomright:1em;-webkit-border-bottom-left-radius:1em;-moz-border-radius-bottomleft:1em}')
+
 if __name__ == '__main__':
     unittest.main()

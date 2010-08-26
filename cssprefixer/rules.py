@@ -51,8 +51,31 @@ class WebkitReplacementRule(BaseReplacementRule):
 class OperaAndIEReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['o', 'ms']
 
+class BorderRadiusReplacementRule(BaseReplacementRule):
+    """
+    Mozilla's Gecko engine uses different syntax for rounded corners.
+    """
+    vendor_prefixes = ['webkit']
+
+    def get_prefixed_props(self):
+        props = BaseReplacementRule.get_prefixed_props(self)
+        name = '-moz-' + self.prop.name.replace('top-left-radius', 'radius-topleft') \
+               .replace('top-right-radius', 'radius-topright') \
+               .replace('bottom-right-radius', 'radius-bottomright') \
+               .replace('bottom-left-radius', 'radius-bottomleft')
+        props += [cssutils.css.Property(
+            name=name,
+            value=self.prop.value,
+            priority=self.prop.priority
+            )]
+        return props
+
 rules = {
     'border-radius': BaseReplacementRule,
+    'border-top-left-radius': BorderRadiusReplacementRule,
+    'border-top-right-radius': BorderRadiusReplacementRule,
+    'border-bottom-right-radius': BorderRadiusReplacementRule,
+    'border-bottom-left-radius': BorderRadiusReplacementRule,
     'border-image': BaseReplacementRule,
     'box-shadow': BaseReplacementRule,
     'box-sizing': BaseReplacementRule,
