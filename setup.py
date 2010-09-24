@@ -6,7 +6,7 @@ from distutils.core import setup
 #     sys.exit('Python 2.5 or higher is required')
 
 setup(name='cssprefixer',
-      version='1.0',
+      version='1.1',
       description="A tool that rewrites your CSS files, adding vendor-prefixed versions of CSS3 rules.",
 #      long_description="""""",
       license='Apache License 2.0',
