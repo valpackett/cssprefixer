@@ -26,7 +26,7 @@ def process(string, debug=False, minify=False):
     if minify:
         cssutils.ser.prefs.useMinified()
     else:
-        cssutils.ser.prefs.useDefault()
+        cssutils.ser.prefs.useDefaults()
     sheet = parser.parseString(string)
     result = ''
     for ruleset in sheet.cssRules:
