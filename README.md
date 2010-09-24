@@ -33,4 +33,5 @@ Like this:
     import cssprefixer
     cssprefixer.process(open('my.css').read(), debug=False, minify=True)
 
-Django stuff (filters for django-assets and django-media-bundler) coming soon.
+### With Django or Flask ###
+or any other Python web framework — latest git version of [webassets](http://github.com/miracle2k/webassets) has a filter for cssprefixer.
