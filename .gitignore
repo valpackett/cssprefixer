@@ -1,2 +1,5 @@
 test.css
+*.pyc
+*DS_Store
 build
+dist
