@@ -13,10 +13,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import re
 import cssutils
 
 class BaseReplacementRule(object):
     vendor_prefixes = ['webkit', 'moz']
+    add_to_sheet = ''
 
     def __init__(self, prop):
         self.prop = prop
@@ -31,11 +33,6 @@ class BaseReplacementRule(object):
                 ))
         return props
 
-    def pure_css_hook(self):
-        """
-        Must return a string to add to the *stylesheet*.
-        """
-        return ''
 
 class FullReplacementRule(BaseReplacementRule):
     """
@@ -69,6 +66,17 @@ class BorderRadiusReplacementRule(BaseReplacementRule):
             priority=self.prop.priority
             ))
         return props
+
+class DisplayReplacementRule(BaseReplacementRule):
+    """
+    Flexible Box Model stuff.
+    CSSUtils parser doesn't support duplicate properties, so that's dirty.
+    """
+    vendor_prefixes = []
+    
+    def replace_hook(self, text):
+        return re.sub(r'display: ?box', # Supporting both minified and original
+                      'display:-webkit-box;display:-moz-box;display:box', text)
 
 rules = {
     'border-radius': BaseReplacementRule,
@@ -114,4 +122,6 @@ rules = {
     'transition-timing-function': FullReplacementRule,
     'transform': FullReplacementRule,
     'transform-origin': FullReplacementRule,
+
+    'display': DisplayReplacementRule,
 }

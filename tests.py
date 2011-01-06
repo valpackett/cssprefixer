@@ -38,5 +38,9 @@ class PrefixerTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('a{border-top-left-radius: 1em;border-top-right-radius: 1em;border-bottom-right-radius: 1em;border-bottom-left-radius: 1em;}', minify=True),
                          'a{border-top-left-radius:1em;border-top-right-radius:1em;border-bottom-right-radius:1em;border-bottom-left-radius:1em;-webkit-border-top-left-radius:1em;-moz-border-radius-topleft:1em;-webkit-border-top-right-radius:1em;-moz-border-radius-topright:1em;-webkit-border-bottom-right-radius:1em;-moz-border-radius-bottomright:1em;-webkit-border-bottom-left-radius:1em;-moz-border-radius-bottomleft:1em}')
 
+    def test_flexbox(self):
+        self.assertEqual(cssprefixer.process('a{display: box;}', minify=True),
+                         'a{display:-webkit-box;display:-moz-box;display:box}')
+
 if __name__ == '__main__':
     unittest.main()
