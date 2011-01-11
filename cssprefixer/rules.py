@@ -73,7 +73,7 @@ class DisplayReplacementRule(BaseReplacementRule):
     CSSUtils parser doesn't support duplicate properties, so that's dirty.
     """
     vendor_prefixes = []
-    
+
     def replace_hook(self, text):
         return re.sub(r'display: ?box', # Supporting both minified and original
                       'display:-webkit-box;display:-moz-box;display:box', text)
@@ -84,7 +84,7 @@ rules = {
     'border-top-right-radius': BorderRadiusReplacementRule,
     'border-bottom-right-radius': BorderRadiusReplacementRule,
     'border-bottom-left-radius': BorderRadiusReplacementRule,
-    'border-image': BaseReplacementRule,
+    'border-image': FullReplacementRule,
     'box-shadow': BaseReplacementRule,
     'box-sizing': BaseReplacementRule,
     'box-orient': BaseReplacementRule,
