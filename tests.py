@@ -42,5 +42,9 @@ class PrefixerTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('a{display: box;}', minify=True),
                          'a{display:-webkit-box;display:-moz-box;display:box}')
 
+    def test_mq(self):
+        self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{color:red}}', minify=True),
+                         '@media screen and (min-width:480px){a{color:red}}')
+
 if __name__ == '__main__':
     unittest.main()
