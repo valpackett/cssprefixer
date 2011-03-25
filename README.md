@@ -11,13 +11,13 @@ For example, this
 
 becomes this:
     #wrapper {
-        border-radius: 1em;
-        transform: rotate(45deg);
-        -webkit-border-radius: 1em;
         -moz-border-radius: 1em;
-        -webkit-transform: rotate(45deg);
+        -o-transform: rotate(45deg);
         -moz-transform: rotate(45deg);
-        -o-transform: rotate(45deg)
+        -webkit-transform: rotate(45deg);
+        -webkit-border-radius: 1em;
+        border-radius: 1em;
+        transform: rotate(45deg)
     }
 
 Requires [cssutils](http://cthedot.de/cssutils/).

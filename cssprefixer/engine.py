@@ -20,10 +20,14 @@ from rules import rules as tr_rules
 def magic(ruleset, debug):
     added = ''
     if hasattr(ruleset, 'style'): # Comments don't
-        for rule in ruleset.style.children():
+        children = list(ruleset.style.children())
+        for rule in children:
             try:
                 processor = tr_rules[rule.name](rule)
-                [ruleset.style.setProperty(prop) for prop in processor.get_prefixed_props()]
+                index = children.index(rule)
+                ruleset.style.seq._readonly = False
+                [ruleset.style.seq.insert(index, prop, 'Property') for prop in processor.get_prefixed_props()]
+                ruleset.style.seq._readonly = True
                 added += processor.add_to_sheet
                 if hasattr(processor, 'replace_hook'):
                     ruleset.cssText = processor.replace_hook(ruleset.cssText)
