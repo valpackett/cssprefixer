@@ -75,7 +75,11 @@ class DisplayReplacementRule(BaseReplacementRule):
         props = []
         if self.prop.value == 'box':#only add prefixes if the value is box
             for prefix in self.vendor_prefixes:
-                props.append(cssutils.css.Property(name='display', value='-%s-box' % prefix, priority=self.prop.priority))
+                props.append(cssutils.css.Property(
+                    name='display', 
+                    value='-%s-box' % prefix, 
+                    priority=self.prop.priority
+                    ))
         return props
 
 rules = {
