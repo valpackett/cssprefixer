@@ -37,9 +37,8 @@ def magic(ruleset, debug):
         rules.reverse()#now that we have unique rules flip the order back to what it was
         ruleset.style.seq._readonly = False
         for rule in rules:
-            ruleDef = tr_rules.get(rule.name)
-            if ruleDef:
-                processor = ruleDef(rule)
+            if rule.name in tr_rules:
+                processor = tr_rules[rule.name](rule)
                 [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props()]
             #always add the original rule
             ruleset.style.seq.append(rule, 'Property')
