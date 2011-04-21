@@ -41,6 +41,10 @@ class PrefixerTestCase(unittest.TestCase):
     def test_flexbox(self):
         self.assertEqual(cssprefixer.process('a{display: box;}', minify=True),
                          'a{display:-webkit-box;display:-moz-box;display:box}')
+                         
+    def test_displaybox(self):
+        self.assertEqual(cssprefixer.process('a{display: display;}', minify=True),
+                         'a{display:display}')
 
     def test_mq(self):
         self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{color:red}}', minify=True),

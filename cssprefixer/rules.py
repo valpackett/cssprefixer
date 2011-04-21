@@ -71,13 +71,12 @@ class DisplayReplacementRule(BaseReplacementRule):
     Flexible Box Model stuff.
     CSSUtils parser doesn't support duplicate properties, so that's dirty.
     """
-    vendor_prefixes = []
-
     def get_prefixed_props(self):
-        return [
-            cssutils.css.Property(name='display', value='-webkit-box', priority=self.prop.priority),
-            cssutils.css.Property(name='display', value='-moz-box', priority=self.prop.priority)
-        ]
+        props = []
+        if self.prop.value == 'box':#only add prefixes if the value is box
+            for prefix in self.vendor_prefixes:
+                props.append(cssutils.css.Property(name='display', value='-%s-box' % prefix, priority=self.prop.priority))
+        return props
 
 rules = {
     'border-radius': BaseReplacementRule,
