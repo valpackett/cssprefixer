@@ -15,29 +15,39 @@
 
 import cssutils
 
+import re
 from rules import rules as tr_rules
 
+prefixRegex = re.compile('^(-o-|-ms-|-moz-|-webkit-)')
+
 def magic(ruleset, debug):
-    added = ''
     if hasattr(ruleset, 'style'): # Comments don't
+        ruleSet = set()
         children = list(ruleset.style.children())
+        children.reverse()#reverse the children so the last style is the one that wins
+        ruleset.style = cssutils.css.CSSStyleDeclaration()#clear out the styles that were there
+        rules = list()
         for rule in children:
-            try:
-                processor = tr_rules[rule.name](rule)
-                index = children.index(rule)
-                ruleset.style.seq._readonly = False
-                [ruleset.style.seq.insert(index, prop, 'Property') for prop in processor.get_prefixed_props()]
-                ruleset.style.seq._readonly = True
-                added += processor.add_to_sheet
-                if hasattr(processor, 'replace_hook'):
-                    ruleset.cssText = processor.replace_hook(ruleset.cssText)
-            except:
-                if debug:
-                    print 'warning with ' + str(rule)
+            rule.name = prefixRegex.sub('', rule.name)
+            if rule.name in ruleSet:
+                continue
+            ruleSet.add(rule.name)
+            rules.append(rule)
+            
+        rules.reverse()#now that we have unique rules flip the order back to what it was
+        ruleset.style.seq._readonly = False
+        for rule in rules:
+            ruleDef = tr_rules.get(rule.name)
+            if ruleDef:
+                processor = ruleDef(rule)
+                [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props()]
+            #always add the original rule
+            ruleset.style.seq.append(rule, 'Property')
+        ruleset.style.seq._readonly = True
     elif hasattr(ruleset, 'cssRules'):
         for subruleset in ruleset:
             magic(subruleset, debug)
-    return unicode(ruleset.cssText) + added
+    return unicode(ruleset.cssText)
 
 def process(string, debug=False, minify=False):
     if debug:

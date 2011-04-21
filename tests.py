@@ -20,11 +20,11 @@ import cssprefixer
 class PrefixerTestCase(unittest.TestCase):
     def test_common(self):
         self.assertEqual(cssprefixer.process('a{border-radius: 1em}', minify=True),
-                         'a{-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em}')
+                         'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}')
 
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{transform: rotate(10deg)}', minify=True),
-                         'a{-o-transform:rotate(10deg);-moz-transform:rotate(10deg);-webkit-transform:rotate(10deg);transform:rotate(10deg)}')
+                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
 
     def test_webkit(self):
         self.assertEqual(cssprefixer.process('a{background-clip: padding-box}', minify=True),
@@ -32,11 +32,11 @@ class PrefixerTestCase(unittest.TestCase):
 
     def test_ie_and_opera(self):
         self.assertEqual(cssprefixer.process('a{text-overflow: ellipsis}', minify=True),
-                         'a{-ms-text-overflow:ellipsis;-o-text-overflow:ellipsis;text-overflow:ellipsis}')
+                         'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')
 
     def test_moz_border_radius(self):
         self.assertEqual(cssprefixer.process('a{border-top-left-radius: 1em;border-top-right-radius: 1em;border-bottom-right-radius: 1em;border-bottom-left-radius: 1em;}', minify=True),
-                         'a{-moz-border-radius-topleft:1em;-moz-border-radius-topright:1em;-moz-border-radius-bottomright:1em;-moz-border-radius-bottomleft:1em;-webkit-border-bottom-left-radius:1em;-webkit-border-bottom-right-radius:1em;-webkit-border-top-right-radius:1em;-webkit-border-top-left-radius:1em;border-top-left-radius:1em;border-top-right-radius:1em;border-bottom-right-radius:1em;border-bottom-left-radius:1em}')
+                         'a{-webkit-border-top-left-radius:1em;-moz-border-radius-topleft:1em;border-top-left-radius:1em;-webkit-border-top-right-radius:1em;-moz-border-radius-topright:1em;border-top-right-radius:1em;-webkit-border-bottom-right-radius:1em;-moz-border-radius-bottomright:1em;border-bottom-right-radius:1em;-webkit-border-bottom-left-radius:1em;-moz-border-radius-bottomleft:1em;border-bottom-left-radius:1em}')
 
     def test_flexbox(self):
         self.assertEqual(cssprefixer.process('a{display: box;}', minify=True),
@@ -45,6 +45,78 @@ class PrefixerTestCase(unittest.TestCase):
     def test_mq(self):
         self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{color:red}}', minify=True),
                          '@media screen and (min-width:480px){a{color:red}}')
+                         
+    def test_mq_common(self):
+        self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{border-radius: 1em}}', minify=True),
+                         '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')
+                         
+    def test_duplicate_common(self):
+        self.assertEqual(cssprefixer.process('a{border-radius: 1em;border-radius: 2em;border-radius: 3em}', minify=True),
+                         'a{-webkit-border-radius:3em;-moz-border-radius:3em;border-radius:3em}')
+                         
+    def test_mixed_common(self):
+        self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em;border-radius: 2em;-webkit-border-radius: 3em}', minify=True),
+                         'a{-webkit-border-radius:3em;-moz-border-radius:3em;border-radius:3em}')
+                         
+class WebkitPrefixerTestCase(unittest.TestCase):
+    def test_common(self):
+        self.assertEqual(cssprefixer.process('a{-webkit-border-radius: 1em}', minify=True),
+                         'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}')
+                         
+    def test_common_and_opera(self):
+        self.assertEqual(cssprefixer.process('a{-webkit-transform: rotate(10deg)}', minify=True),
+                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
+                         
+    def test_webkit(self):
+        self.assertEqual(cssprefixer.process('a{-webkit-background-clip: padding-box}', minify=True),
+                         'a{-webkit-background-clip:padding-box;background-clip:padding-box}')
 
+    def test_moz_border_radius(self):
+        self.assertEqual(cssprefixer.process('a{-webkit-border-top-left-radius: 1em;-webkit-border-top-right-radius: 1em;-webkit-border-bottom-right-radius: 1em;-webkit-border-bottom-left-radius: 1em;}', minify=True),
+                         'a{-webkit-border-top-left-radius:1em;-moz-border-radius-topleft:1em;border-top-left-radius:1em;-webkit-border-top-right-radius:1em;-moz-border-radius-topright:1em;border-top-right-radius:1em;-webkit-border-bottom-right-radius:1em;-moz-border-radius-bottomright:1em;border-bottom-right-radius:1em;-webkit-border-bottom-left-radius:1em;-moz-border-radius-bottomleft:1em;border-bottom-left-radius:1em}')
+                         
+    def test_flexbox(self):
+        self.assertEqual(cssprefixer.process('a{-webkit-display: box;}', minify=True),
+                         'a{display:-webkit-box;display:-moz-box;display:box}')
+                         
+    def test_mq_common(self):
+        self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{-webkit-border-radius: 1em}}', minify=True),
+                         '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')                           
+                         
+class MozPrefixerTestCase(unittest.TestCase):
+    def test_common(self):
+        self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em}', minify=True),
+                         'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}')
+                         
+    def test_common_and_opera(self):
+        self.assertEqual(cssprefixer.process('a{-moz-transform: rotate(10deg)}', minify=True),
+                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
+                         
+    def test_moz_border_radius(self):
+        self.assertEqual(cssprefixer.process('a{-moz-border-top-left-radius: 1em;-moz-border-top-right-radius: 1em;-moz-border-bottom-right-radius: 1em;-moz-border-bottom-left-radius: 1em;}', minify=True),
+                         'a{-webkit-border-top-left-radius:1em;-moz-border-radius-topleft:1em;border-top-left-radius:1em;-webkit-border-top-right-radius:1em;-moz-border-radius-topright:1em;border-top-right-radius:1em;-webkit-border-bottom-right-radius:1em;-moz-border-radius-bottomright:1em;border-bottom-right-radius:1em;-webkit-border-bottom-left-radius:1em;-moz-border-radius-bottomleft:1em;border-bottom-left-radius:1em}')
+                         
+    def test_flexbox(self):
+        self.assertEqual(cssprefixer.process('a{-moz-display: box;}', minify=True),
+                         'a{display:-webkit-box;display:-moz-box;display:box}')  
+                         
+    def test_mq_common(self):
+        self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{-moz-border-radius: 1em}}', minify=True),
+                         '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')                        
+                         
+class OperaPrefixerTestCase(unittest.TestCase):
+    def test_common_and_opera(self):
+        self.assertEqual(cssprefixer.process('a{-o-transform: rotate(10deg)}', minify=True),
+                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
+                         
+    def test_ie_and_opera(self):
+        self.assertEqual(cssprefixer.process('a{-o-text-overflow: ellipsis}', minify=True),
+                         'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')                         
+
+class IePrefixerTestCase(unittest.TestCase):
+    def test_ie_and_opera(self):
+        self.assertEqual(cssprefixer.process('a{-ms-text-overflow: ellipsis}', minify=True),
+                         'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')   
+                         
 if __name__ == '__main__':
     unittest.main()

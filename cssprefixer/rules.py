@@ -18,7 +18,6 @@ import cssutils
 
 class BaseReplacementRule(object):
     vendor_prefixes = ['webkit', 'moz']
-    add_to_sheet = ''
 
     def __init__(self, prop):
         self.prop = prop
@@ -74,9 +73,11 @@ class DisplayReplacementRule(BaseReplacementRule):
     """
     vendor_prefixes = []
 
-    def replace_hook(self, text):
-        return re.sub(r'display: ?box', # Supporting both minified and original
-                      'display:-webkit-box;display:-moz-box;display:box', text)
+    def get_prefixed_props(self):
+        return [
+            cssutils.css.Property(name='display', value='-webkit-box', priority=self.prop.priority),
+            cssutils.css.Property(name='display', value='-moz-box', priority=self.prop.priority)
+        ]
 
 rules = {
     'border-radius': BaseReplacementRule,
