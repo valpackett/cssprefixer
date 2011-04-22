@@ -81,12 +81,25 @@ class PrefixerTestCase(unittest.TestCase):
     box-shadow: #123456 0 0 10px;
     display: -webkit-box;
     display: -moz-box;
-    display: box;
-}''')
+    display: box
+    }''')
 
     def test_empty(self):
         self.assertEqual(cssprefixer.process('a{}', minify=True), '')
         self.assertEqual(cssprefixer.process('a{}', minify=False), '')
+        
+    def test_media_no_mini(self):
+        self.assertEqual(cssprefixer.process('''@media screen and (max-device-width: 480px){
+    #book{
+        border-radius: 1em;
+    }
+}''', minify=False), '''@media screen and (max-device-width: 480px) {
+    #book {
+        -webkit-border-radius: 1em;
+        -moz-border-radius: 1em;
+        border-radius: 1em
+        }
+    }''')
                          
 class WebkitPrefixerTestCase(unittest.TestCase):
     def test_common(self):

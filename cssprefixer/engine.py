@@ -49,10 +49,7 @@ def magic(ruleset, debug, minify):
     cssText = ruleset.cssText
     if not cssText:#blank rules return None so return an empty string
         return ''
-    cssText = unicode(cssText)
-    if not minify:#if we are not minifying the css add a ; to the last property and remove the white space before the {
-        cssText = re.sub('\n\s*}', ';\n}', cssText)
-    return cssText
+    return unicode(cssText)
 
 def process(string, debug=False, minify=False):
     loglevel = 'info' if debug else 'error'
@@ -63,11 +60,18 @@ def process(string, debug=False, minify=False):
         cssutils.ser.prefs.useDefaults()
     sheet = parser.parseString(string)
     
+    results = []
+    for ruleset in sheet.cssRules:
+        cssText = magic(ruleset, debug, minify)
+        if cssText:
+            results.append(cssText)
+            
     #format with newlines based on minify
     joinStr = '' if minify else '\n\n'
+    
     # Not using sheet.cssText - it's buggy:
     # it skips some prefixed properties.
-    return joinStr.join((magic(ruleset, debug, minify) for ruleset in sheet.cssRules))
+    return joinStr.join(results)
 
 __all__ = ('process')
 
