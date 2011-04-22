@@ -51,13 +51,17 @@ def magic(ruleset, debug, minify):
         return ''
     return unicode(cssText)
 
-def process(string, debug=False, minify=False):
+def process(string, debug=False, minify=False, **prefs):
     loglevel = 'info' if debug else 'error'
     parser = cssutils.CSSParser(loglevel=loglevel)
     if minify:
         cssutils.ser.prefs.useMinified()
     else:
         cssutils.ser.prefs.useDefaults()
+    #use the passed in prefs
+    for key, value in prefs.iteritems():
+        if hasattr(cssutils.ser.prefs, key):
+            cssutils.ser.prefs.__dict__[key] = value
     sheet = parser.parseString(string)
     
     results = []
