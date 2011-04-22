@@ -52,10 +52,7 @@ def magic(ruleset, debug, minify):
     return cssText
 
 def process(string, debug=False, minify=False):
-    if debug:
-        loglevel = 'info'
-    else:
-        loglevel = 'error'
+    loglevel = 'info' if debug else 'error'
     parser = cssutils.CSSParser(loglevel=loglevel)
     if minify:
         cssutils.ser.prefs.useMinified()
