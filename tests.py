@@ -83,6 +83,10 @@ class PrefixerTestCase(unittest.TestCase):
     display: -moz-box;
     display: box;
 }''')
+
+    def test_empty(self):
+        self.assertEqual(cssprefixer.process('a{}', minify=True), '')
+        self.assertEqual(cssprefixer.process('a{}', minify=False), '')
                          
 class WebkitPrefixerTestCase(unittest.TestCase):
     def test_common(self):
