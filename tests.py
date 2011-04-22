@@ -100,6 +100,15 @@ class PrefixerTestCase(unittest.TestCase):
         border-radius: 1em
         }
     }''')
+    
+    def test_comment(self):
+        self.assertEqual(cssprefixer.process('''/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block
+    }''', minify=False), '''/* HTML5 display-role reset for older browsers */
+article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block
+    }''')
                          
 class WebkitPrefixerTestCase(unittest.TestCase):
     def test_common(self):

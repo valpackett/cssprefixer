@@ -49,7 +49,9 @@ def magic(ruleset, debug, minify):
     cssText = ruleset.cssText
     if not cssText:#blank rules return None so return an empty string
         return ''
-    return unicode(cssText)
+    if minify or not hasattr(ruleset, 'style'):
+        return unicode(cssText)
+    return unicode(cssText)+'\n'
 
 def process(string, debug=False, minify=False, **prefs):
     loglevel = 'info' if debug else 'error'
@@ -71,11 +73,11 @@ def process(string, debug=False, minify=False, **prefs):
             results.append(cssText)
             
     #format with newlines based on minify
-    joinStr = '' if minify else '\n\n'
+    joinStr = '' if minify else '\n'
     
     # Not using sheet.cssText - it's buggy:
     # it skips some prefixed properties.
-    return joinStr.join(results)
+    return joinStr.join(results).rstrip()
 
 __all__ = ('process')
 
