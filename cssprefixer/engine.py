@@ -20,7 +20,7 @@ from rules import rules as tr_rules
 
 prefixRegex = re.compile('^(-o-|-ms-|-moz-|-webkit-)')
 
-def magic(ruleset, debug):
+def magic(ruleset, debug, minify):
     if hasattr(ruleset, 'style'): # Comments don't
         ruleSet = set()
         children = list(ruleset.style.children())
@@ -45,8 +45,11 @@ def magic(ruleset, debug):
         ruleset.style.seq._readonly = True
     elif hasattr(ruleset, 'cssRules'):
         for subruleset in ruleset:
-            magic(subruleset, debug)
-    return unicode(ruleset.cssText)
+            magic(subruleset, debug, minify)
+    cssText = unicode(ruleset.cssText)
+    if not minify:#if we are not minifying the css add a ; to the last property and remove the white space before the {
+        cssText = re.sub('\n\s*}', ';\n}', cssText)
+    return cssText
 
 def process(string, debug=False, minify=False):
     if debug:
@@ -61,7 +64,7 @@ def process(string, debug=False, minify=False):
     sheet = parser.parseString(string)
     result = ''
     for ruleset in sheet.cssRules:
-        result += magic(ruleset, debug)
+        result += magic(ruleset, debug, minify)
 
     # Not using sheet.cssText - it's buggy:
     # it skips some prefixed properties.

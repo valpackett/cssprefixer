@@ -62,6 +62,28 @@ class PrefixerTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em;border-radius: 2em;-webkit-border-radius: 3em}', minify=True),
                          'a{-webkit-border-radius:3em;-moz-border-radius:3em;border-radius:3em}')
                          
+    def test_no_mini(self):
+        self.assertEqual(cssprefixer.process('''.my-class, #my-id {
+    border-radius: 1em;
+    transition: all 1s ease;
+    box-shadow: #123456 0 0 10px;
+    display: box;
+}''', minify=False), '''.my-class, #my-id {
+    -webkit-border-radius: 1em;
+    -moz-border-radius: 1em;
+    border-radius: 1em;
+    -webkit-transition: all 1s ease;
+    -moz-transition: all 1s ease;
+    -o-transition: all 1s ease;
+    transition: all 1s ease;
+    -webkit-box-shadow: #123456 0 0 10px;
+    -moz-box-shadow: #123456 0 0 10px;
+    box-shadow: #123456 0 0 10px;
+    display: -webkit-box;
+    display: -moz-box;
+    display: box;
+}''')
+                         
 class WebkitPrefixerTestCase(unittest.TestCase):
     def test_common(self):
         self.assertEqual(cssprefixer.process('a{-webkit-border-radius: 1em}', minify=True),
