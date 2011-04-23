@@ -17,8 +17,7 @@ import cssutils
 
 import re
 from rules import rules as tr_rules
-
-prefixRegex = re.compile('^(-o-|-ms-|-moz-|-webkit-)')
+from rules import prefixRegex
 
 def magic(ruleset, debug, minify):
     if hasattr(ruleset, 'style'): # Comments don't
@@ -37,11 +36,15 @@ def magic(ruleset, debug, minify):
         rules.reverse()#now that we have unique rules flip the order back to what it was
         ruleset.style.seq._readonly = False
         for rule in rules:
+            processor = None
             if rule.name in tr_rules:
                 processor = tr_rules[rule.name](rule)
                 [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props()]
             #always add the original rule
-            ruleset.style.seq.append(rule, 'Property')
+            if processor and hasattr(processor, 'get_base_prop'):
+                ruleset.style.seq.append(processor.get_base_prop(), 'Property')
+            else:
+                ruleset.style.seq.append(rule, 'Property')
         ruleset.style.seq._readonly = True
     elif hasattr(ruleset, 'cssRules'):
         for subruleset in ruleset:

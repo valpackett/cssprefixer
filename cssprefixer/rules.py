@@ -16,6 +16,8 @@
 import re
 import cssutils
 
+prefixRegex = re.compile('^(-o-|-ms-|-moz-|-webkit-)')
+
 class BaseReplacementRule(object):
     vendor_prefixes = ['webkit', 'moz']
 
@@ -82,6 +84,43 @@ class DisplayReplacementRule(BaseReplacementRule):
                     ))
         return props
 
+class TransitionReplacementRule(BaseReplacementRule):
+    vendor_prefixes = ['webkit', 'moz', 'o']
+    
+    def __get_prefixed_prop(self, prefix=None):
+        #transition-property is the easy one...
+        name = self.prop.name
+        if prefix:
+            name = '-%s-%s' % (prefix, self.prop.name)        
+        if self.prop.name == 'transition-property':
+            values = self.prop.value.split(',')
+            newValues = []
+            for value in values:
+                value = prefixRegex.sub('', value.strip())
+                if value in rules and prefix:
+                    newValues.append('-%s-%s' % (prefix, value))
+                else:
+                    newValues.append(value)
+            return cssutils.css.Property(
+                    name=name,
+                    value=', '.join(newValues),
+                    priority=self.prop.priority
+                    )
+        return cssutils.css.Property(
+            name=name,
+            value=self.prop.value,
+            priority=self.prop.priority
+            )
+    
+    def get_prefixed_props(self):
+        props = []
+        for prefix in self.vendor_prefixes:
+            props.append(self.__get_prefixed_prop(prefix))
+        return props
+        
+    def get_base_prop(self):
+        return self.__get_prefixed_prop()
+
 rules = {
     'border-radius': BaseReplacementRule,
     'border-top-left-radius': BorderRadiusReplacementRule,
@@ -119,10 +158,10 @@ rules = {
 
     'text-overflow': OperaAndIEReplacementRule,
 
-    'transition': FullReplacementRule,
+    'transition': TransitionReplacementRule,
     'transition-delay': FullReplacementRule,
     'transition-duration': FullReplacementRule,
-    'transition-property': FullReplacementRule,
+    'transition-property': TransitionReplacementRule,
     'transition-timing-function': FullReplacementRule,
     'transform': FullReplacementRule,
     'transform-origin': FullReplacementRule,

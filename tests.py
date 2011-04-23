@@ -62,6 +62,21 @@ class PrefixerTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em;border-radius: 2em;-webkit-border-radius: 3em}', minify=True),
                          'a{-webkit-border-radius:3em;-moz-border-radius:3em;border-radius:3em}')
                          
+    def test_transition_property(self):
+        self.assertEqual(cssprefixer.process('''div {
+  -webkit-transition-property: -webkit-transform, opacity, left;
+  -webkit-transition-duration: 2s, 4s;
+}''', minify=False), '''div {
+    -webkit-transition-property: -webkit-transform, opacity, left;
+    -moz-transition-property: -moz-transform, opacity, left;
+    -o-transition-property: -o-transform, opacity, left;
+    transition-property: transform, opacity, left;
+    -webkit-transition-duration: 2s, 4s;
+    -moz-transition-duration: 2s, 4s;
+    -o-transition-duration: 2s, 4s;
+    transition-duration: 2s, 4s
+    }''')                         
+                         
     def test_no_mini(self):
         self.assertEqual(cssprefixer.process('''.my-class, #my-id {
     border-radius: 1em;
