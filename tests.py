@@ -161,6 +161,23 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
     display: block
     }''')
+    
+    def test_inline_comment(self):
+        #TODO: it would be nice if comments on the same line remained there, but this may not be possible because
+        #cssutils tears everything apart into objects and then we rebuild it.
+        self.assertEqual(cssprefixer.process('''article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;/* HTML5 display-role reset for older browsers */
+    }''', minify=False), '''article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    display: block;
+    /* HTML5 display-role reset for older browsers */
+    }''')
+        self.assertEqual(cssprefixer.process('''article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    /* HTML5 display-role reset for older browsers */
+    display: block;
+    }''', minify=False), '''article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
+    /* HTML5 display-role reset for older browsers */
+    display: block
+    }''')        
                          
 class WebkitPrefixerTestCase(unittest.TestCase):
     def test_common(self):

@@ -27,6 +27,9 @@ def magic(ruleset, debug, minify):
         ruleset.style = cssutils.css.CSSStyleDeclaration()#clear out the styles that were there
         rules = list()
         for rule in children:
+            if not hasattr(rule, 'name'):#comments don't have name
+                rules.append(rule)
+                continue
             rule.name = prefixRegex.sub('', rule.name)
             if rule.name in ruleSet:
                 continue
@@ -36,6 +39,9 @@ def magic(ruleset, debug, minify):
         rules.reverse()#now that we have unique rules flip the order back to what it was
         ruleset.style.seq._readonly = False
         for rule in rules:
+            if not hasattr(rule, 'name'):
+                ruleset.style.seq.append(rule, 'Comment')
+                continue        
             processor = None
             if rule.name in tr_rules:
                 processor = tr_rules[rule.name](rule)
