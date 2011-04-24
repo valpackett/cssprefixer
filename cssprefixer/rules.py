@@ -88,29 +88,21 @@ class TransitionReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['webkit', 'moz', 'o']
     
     def __get_prefixed_prop(self, prefix=None):
-        #transition-property is the easy one...
         name = self.prop.name
         if prefix:
-            name = '-%s-%s' % (prefix, self.prop.name)        
-        if self.prop.name == 'transition-property':
-            values = self.prop.value.split(',')
-            newValues = []
-            for value in values:
-                value = prefixRegex.sub('', value.strip())
-                if value in rules and prefix:
-                    newValues.append('-%s-%s' % (prefix, value))
-                else:
-                    newValues.append(value)
-            return cssutils.css.Property(
-                    name=name,
-                    value=', '.join(newValues),
-                    priority=self.prop.priority
-                    )
+            name = '-%s-%s' % (prefix, self.prop.name)
+        newValues = []
+        for value in self.prop.value.split(','):
+            parts = value.strip().split(' ')
+            parts[0] = prefixRegex.sub('', parts[0])
+            if parts[0] in rules and prefix:
+                parts[0] = '-%s-%s' % (prefix, parts[0])
+            newValues.append(' '.join(parts))
         return cssutils.css.Property(
-            name=name,
-            value=self.prop.value,
-            priority=self.prop.priority
-            )
+                name=name,
+                value=', '.join(newValues),
+                priority=self.prop.priority
+                )
     
     def get_prefixed_props(self):
         props = []

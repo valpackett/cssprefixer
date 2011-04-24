@@ -61,21 +61,31 @@ class PrefixerTestCase(unittest.TestCase):
     def test_mixed_common(self):
         self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em;border-radius: 2em;-webkit-border-radius: 3em}', minify=True),
                          'a{-webkit-border-radius:3em;-moz-border-radius:3em;border-radius:3em}')
-                         
+
+    def test_transition(self):
+        self.assertEqual(cssprefixer.process('''div {
+      -webkit-transition: color .25s linear, -webkit-transform .15s linear .1s;
+    }''', minify=False), '''div {
+    -webkit-transition: color 0.25s linear, -webkit-transform 0.15s linear 0.1s;
+    -moz-transition: color 0.25s linear, -moz-transform 0.15s linear 0.1s;
+    -o-transition: color 0.25s linear, -o-transform 0.15s linear 0.1s;
+    transition: color 0.25s linear, transform 0.15s linear 0.1s
+    }''')
+             
     def test_transition_property(self):
         self.assertEqual(cssprefixer.process('''div {
   -webkit-transition-property: -webkit-transform, opacity, left;
-  -webkit-transition-duration: 2s, 4s;
+  -webkit-transition-duration: rotatey(45deg), 2s, 4s;
 }''', minify=False), '''div {
     -webkit-transition-property: -webkit-transform, opacity, left;
     -moz-transition-property: -moz-transform, opacity, left;
     -o-transition-property: -o-transform, opacity, left;
     transition-property: transform, opacity, left;
-    -webkit-transition-duration: 2s, 4s;
-    -moz-transition-duration: 2s, 4s;
-    -o-transition-duration: 2s, 4s;
-    transition-duration: 2s, 4s
-    }''')                         
+    -webkit-transition-duration: rotatey(45deg), 2s, 4s;
+    -moz-transition-duration: rotatey(45deg), 2s, 4s;
+    -o-transition-duration: rotatey(45deg), 2s, 4s;
+    transition-duration: rotatey(45deg), 2s, 4s
+    }''')
                          
     def test_no_mini(self):
         self.assertEqual(cssprefixer.process('''.my-class, #my-id {
