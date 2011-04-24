@@ -105,7 +105,6 @@ class PrefixerTestCase(unittest.TestCase):
     transition-duration: rotatey(45deg), 2s, 4s
     }''')
     
-    
     def test_opacity(self):
         self.assertEqual(cssprefixer.process('''a {
     opacity: 0.25;
@@ -222,6 +221,136 @@ class IePrefixerTestCase(unittest.TestCase):
     def test_ie_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-ms-text-overflow: ellipsis}', minify=True),
                          'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')   
-                         
+             
+class GradientTestCase(unittest.TestCase):            
+    def test_basic(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background-image: linear-gradient(top, #444444, #999999);
+    }''', minify=False), '''.box_gradient {
+    background-image: -webkit-linear-gradient(top, #444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
+    background-image: -moz-linear-gradient(top, #444, #999);
+    background-image: -o-linear-gradient(top, #444, #999);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
+    background-image: linear-gradient(top, #444, #999)
+    }''') 
+
+    def test_webkit(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background-image: -webkit-linear-gradient(top, #444444, #999999);
+    }''', minify=False), '''.box_gradient {
+    background-image: -webkit-linear-gradient(top, #444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
+    background-image: -moz-linear-gradient(top, #444, #999);
+    background-image: -o-linear-gradient(top, #444, #999);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
+    background-image: linear-gradient(top, #444, #999)
+    }''')  
+        
+    def test_webkit_mixed(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background-image: -webkit-linear-gradient(top, #444444, #999999), linear-gradient(top, black, white);
+    }''', minify=False), '''.box_gradient {
+    background-image: -webkit-linear-gradient(top, #444, #999), -webkit-linear-gradient(top, black, white);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
+    background-image: -moz-linear-gradient(top, #444, #999), -moz-linear-gradient(top, black, white);
+    background-image: -o-linear-gradient(top, #444, #999), -o-linear-gradient(top, black, white);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
+    background-image: linear-gradient(top, #444, #999), linear-gradient(top, black, white)
+    }''')  
+    
+    def test_moz(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background-image: -moz-linear-gradient(top, #444444, #999999);
+    }''', minify=False), '''.box_gradient {
+    background-image: -webkit-linear-gradient(top, #444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
+    background-image: -moz-linear-gradient(top, #444, #999);
+    background-image: -o-linear-gradient(top, #444, #999);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
+    background-image: linear-gradient(top, #444, #999)
+    }''') 
+    
+    def test_o(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background-image: -o-linear-gradient(top, #444444, #999999);
+    }''', minify=False), '''.box_gradient {
+    background-image: -webkit-linear-gradient(top, #444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
+    background-image: -moz-linear-gradient(top, #444, #999);
+    background-image: -o-linear-gradient(top, #444, #999);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
+    background-image: linear-gradient(top, #444, #999)
+    }''')
+    
+    def test_webkit_gradient(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
+    }''', minify=False), '''.box_gradient {
+    background-image: -webkit-linear-gradient(top, #444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
+    background-image: -moz-linear-gradient(top, #444, #999);
+    background-image: -o-linear-gradient(top, #444, #999);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
+    background-image: linear-gradient(top, #444, #999)
+    }''')
+    
+    def test_webkit_gradient_mixed(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-linear-gradient(top, black, white);
+    }''', minify=False), '''.box_gradient {
+    background-image: -webkit-linear-gradient(top, #444, #999), -webkit-linear-gradient(top, black, white);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
+    background-image: -moz-linear-gradient(top, #444, #999), -moz-linear-gradient(top, black, white);
+    background-image: -o-linear-gradient(top, #444, #999), -o-linear-gradient(top, black, white);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
+    background-image: linear-gradient(top, #444, #999), linear-gradient(top, black, white)
+    }''')
+    
+    def test_image(self):
+        #I don't think this test produces valid css but it shows that data and order is being preserved.
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background-image: url(images/background.png), linear-gradient(top, black, white);
+    }''', minify=False), '''.box_gradient {
+    background-image: url(images/background.png), -webkit-linear-gradient(top, black, white);
+    background-image: url(images/background.png), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
+    background-image: url(images/background.png), -moz-linear-gradient(top, black, white);
+    background-image: url(images/background.png), -o-linear-gradient(top, black, white);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
+    background-image: url(images/background.png), linear-gradient(top, black, white)
+    }''')
+    
+    def test_background_multiple_images(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background: url(images/cross.png), url(images/gradient.png) top center no-repeat, url(images/background.png);
+    }''', minify=False), '''.box_gradient {
+    background: url(images/cross.png), url(images/gradient.png) top center no-repeat, url(images/background.png)
+    }''') 
+    
+    def test_background_multiple_images_and_gradient(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
+    }''', minify=False), '''.box_gradient {
+    background: -webkit-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white)), url(images/gradient.png) top center no-repeat, url(images/background.png);
+    background: -moz-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
+    background: -o-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
+    background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png)
+    }''')
+    
+    def test_background_multiple_images_and_gradients(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -moz-linear-gradient(top, #444444, #999999);
+    }''', minify=False), '''.box_gradient {
+    background: -webkit-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -webkit-linear-gradient(top, #444, #999);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white)), url(images/gradient.png) top center no-repeat, url(images/background.png), -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
+    background: -moz-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -moz-linear-gradient(top, #444, #999);
+    background: -o-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -o-linear-gradient(top, #444, #999);
+    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
+    background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), linear-gradient(top, #444, #999)
+    }''')
+
+  
 if __name__ == '__main__':
     unittest.main()

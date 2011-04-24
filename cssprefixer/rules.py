@@ -129,6 +129,90 @@ class OpacityReplacementRule(BaseReplacementRule):
     def should_prefix():
         return False        
 
+class GradientReplacementRule(BaseReplacementRule):
+    vendor_prefixes = ['webkit', 'moz', 'o']
+    
+    def __iter_values(self):
+        valueSplit = self.prop.value.split(',')
+        index = 0
+        currentString = ''
+        while(True):
+            if index >= len(valueSplit):
+                break
+            snip = prefixRegex.sub('', valueSplit[index].strip())
+            if snip.startswith('linear-gradient'):
+                yield {
+                    'pos': re.sub('^linear-gradient\(', '', snip),
+                    'start': valueSplit[index+1].strip(),
+                    'end': re.sub('\)+$', '', valueSplit[index+2].strip()),
+                    }
+                index += 3
+            elif snip.startswith('gradient'):
+                yield {
+                    'pos': 'top',
+                    'start': re.sub('\)+$', '', valueSplit[index+4].strip()),
+                    'end': re.sub('\)+$', '', valueSplit[index+6].strip()),
+                    }
+                index += 7
+            else:
+                #not a gradient so just yield the raw string
+                yield snip
+                index += 1
+                
+    def __get_prefixed_prop(self, values, prefix=None):
+        gradientName = 'linear-gradient'
+        if prefix:
+            gradientName = '-%s-%s' % (prefix, gradientName)
+        newValues = []
+        for value in values:
+            if isinstance(value, dict):
+                newValues.append(gradientName+'(%(pos)s, %(start)s, %(end)s)' % value)
+            else:
+                newValues.append(value)
+        return cssutils.css.Property(
+                name=self.prop.name,
+                value=', '.join(newValues),
+                priority=self.prop.priority
+                )
+                
+    def get_prefixed_props(self):
+        values = list(self.__iter_values())
+        needPrefix = False
+        for value in values:#check if there are any gradients
+            if isinstance(value, dict):
+                needPrefix = True
+                break
+        if needPrefix:
+            for prefix in self.vendor_prefixes:
+                yield self.__get_prefixed_prop(values, prefix)
+                if prefix == 'webkit':
+                    newValues = []
+                    for value in values:
+                        if isinstance(value, dict):
+                            newValues.append('-webkit-gradient(linear, left top, left bottom, color-stop(0, %(start)s), color-stop(1, %(end)s))' % value)
+                        else:
+                            newValues.append(value)                        
+                    yield cssutils.css.Property(
+                            name=self.prop.name,
+                            value=', '.join(newValues),
+                            priority=self.prop.priority
+                            )
+            #add an ie gradient if there is gradient data
+            for value in values:
+                if isinstance(value, dict):
+                    yield cssutils.css.Property(
+                            name='filter',
+                            value='"progid:DXImageTransform.Microsoft.gradient(startColorStr=%(start)s, EndColorStr=%(end)s)"' % value,
+                            priority=self.prop.priority
+                            )
+                    break
+        else:
+            yield None
+            
+    def get_base_prop(self):
+        values = self.__iter_values()
+        return self.__get_prefixed_prop(values)            
+
 rules = {
     'border-radius': BaseReplacementRule,
     'border-top-left-radius': BorderRadiusReplacementRule,
@@ -163,6 +247,8 @@ rules = {
     'background-clip': WebkitReplacementRule,
     'background-origin': WebkitReplacementRule,
     'background-size': WebkitReplacementRule,
+    'background-image': GradientReplacementRule,
+    'background': GradientReplacementRule,
 
     'text-overflow': OperaAndIEReplacementRule,
 

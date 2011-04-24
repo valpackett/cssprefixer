@@ -39,7 +39,7 @@ def magic(ruleset, debug, minify):
             processor = None
             if rule.name in tr_rules:
                 processor = tr_rules[rule.name](rule)
-                [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props()]
+                [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props() if prop]
             #always add the original rule
             if processor and hasattr(processor, 'get_base_prop'):
                 ruleset.style.seq.append(processor.get_base_prop(), 'Property')
