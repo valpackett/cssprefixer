@@ -141,15 +141,26 @@ class GradientReplacementRule(BaseReplacementRule):
                 break
             snip = prefixRegex.sub('', valueSplit[index].strip())
             if snip.startswith('linear-gradient'):
-                yield {
-                    'pos': re.sub('^linear-gradient\(', '', snip),
-                    'start': valueSplit[index+1].strip(),
-                    'end': re.sub('\)+$', '', valueSplit[index+2].strip()),
-                    }
-                index += 3
+                values = [re.sub('^linear-gradient\(', '', snip)]
+                if valueSplit[index+1].strip().endswith(')'):
+                    values.append(re.sub('\)+$', '', valueSplit[index+1].strip()))
+                else:
+                    values.append(valueSplit[index+1].strip())
+                    values.append(re.sub('\)+$', '', valueSplit[index+2].strip()))
+                if len(values) == 2:
+                    yield {
+                        'start': values[0],
+                        'end': values[1]
+                        }
+                else:
+                    yield {
+                        'pos': values[0],
+                        'start': values[1],
+                        'end': values[2]
+                        }                    
+                index += len(values)
             elif snip.startswith('gradient'):
                 yield {
-                    'pos': 'top',
                     'start': re.sub('\)+$', '', valueSplit[index+4].strip()),
                     'end': re.sub('\)+$', '', valueSplit[index+6].strip()),
                     }
@@ -166,7 +177,10 @@ class GradientReplacementRule(BaseReplacementRule):
         newValues = []
         for value in values:
             if isinstance(value, dict):
-                newValues.append(gradientName+'(%(pos)s, %(start)s, %(end)s)' % value)
+                if 'pos' in value:
+                    newValues.append(gradientName+'(%(pos)s, %(start)s, %(end)s)' % value)
+                else:
+                    newValues.append(gradientName+'(%(start)s, %(end)s)' % value)
             else:
                 newValues.append(value)
         return cssutils.css.Property(
