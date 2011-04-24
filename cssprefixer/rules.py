@@ -33,6 +33,10 @@ class BaseReplacementRule(object):
                 priority=self.prop.priority
                 ))
         return props
+        
+    @staticmethod
+    def should_prefix():
+        return True
 
 
 class FullReplacementRule(BaseReplacementRule):
@@ -95,7 +99,7 @@ class TransitionReplacementRule(BaseReplacementRule):
         for value in self.prop.value.split(','):
             parts = value.strip().split(' ')
             parts[0] = prefixRegex.sub('', parts[0])
-            if parts[0] in rules and prefix:
+            if parts[0] in rules and prefix and rules[parts[0]].should_prefix():
                 parts[0] = '-%s-%s' % (prefix, parts[0])
             newValues.append(' '.join(parts))
         return cssutils.css.Property(
@@ -112,6 +116,26 @@ class TransitionReplacementRule(BaseReplacementRule):
         
     def get_base_prop(self):
         return self.__get_prefixed_prop()
+
+class OpacityReplacementRule(BaseReplacementRule):
+    def get_prefixed_props(self):
+        ieValue = float(self.prop.value)*100
+        return (
+            cssutils.css.Property(
+                name='-ms-filter',
+                value='"progid:DXImageTransform.Microsoft.Alpha(Opacity=%d)"' % ieValue,
+                priority=self.prop.priority
+                ),
+            cssutils.css.Property(
+                name='filter',
+                value='alpha(opacity=%d)' % ieValue,
+                priority=self.prop.priority
+                )
+        )
+        
+    @staticmethod
+    def should_prefix():
+        return False        
 
 rules = {
     'border-radius': BaseReplacementRule,
@@ -159,4 +183,6 @@ rules = {
     'transform-origin': FullReplacementRule,
 
     'display': DisplayReplacementRule,
+    
+    'opacity': OpacityReplacementRule,    
 }

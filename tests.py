@@ -92,9 +92,9 @@ class PrefixerTestCase(unittest.TestCase):
              
     def test_transition_property(self):
         self.assertEqual(cssprefixer.process('''div {
-  -webkit-transition-property: -webkit-transform, opacity, left;
-  -webkit-transition-duration: rotatey(45deg), 2s, 4s;
-}''', minify=False), '''div {
+    -webkit-transition-property: -webkit-transform, opacity, left;
+    -webkit-transition-duration: rotatey(45deg), 2s, 4s;
+    }''', minify=False), '''div {
     -webkit-transition-property: -webkit-transform, opacity, left;
     -moz-transition-property: -moz-transform, opacity, left;
     -o-transition-property: -o-transform, opacity, left;
@@ -104,7 +104,17 @@ class PrefixerTestCase(unittest.TestCase):
     -o-transition-duration: rotatey(45deg), 2s, 4s;
     transition-duration: rotatey(45deg), 2s, 4s
     }''')
-                         
+    
+    
+    def test_opacity(self):
+        self.assertEqual(cssprefixer.process('''a {
+    opacity: 0.25;
+    }''', minify=False), '''a {
+    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
+    filter: alpha(opacity=25);
+    opacity: 0.25
+    }''')    
+                 
     def test_no_mini(self):
         self.assertEqual(cssprefixer.process('''.my-class, #my-id {
     border-radius: 1em;
