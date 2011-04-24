@@ -25,14 +25,12 @@ class BaseReplacementRule(object):
         self.prop = prop
 
     def get_prefixed_props(self):
-        props = []
         for prefix in self.vendor_prefixes:
-            props.append(cssutils.css.Property(
-                name='-%s-%s' % (prefix, self.prop.name),
-                value=self.prop.value,
-                priority=self.prop.priority
-                ))
-        return props
+            yield cssutils.css.Property(
+                    name='-%s-%s' % (prefix, self.prop.name),
+                    value=self.prop.value,
+                    priority=self.prop.priority
+                    )
         
     @staticmethod
     def should_prefix():
@@ -60,17 +58,17 @@ class BorderRadiusReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['webkit']
 
     def get_prefixed_props(self):
-        props = BaseReplacementRule.get_prefixed_props(self)
+        for prop in BaseReplacementRule.get_prefixed_props(self):
+            yield prop
         name = '-moz-' + self.prop.name.replace('top-left-radius', 'radius-topleft') \
                .replace('top-right-radius', 'radius-topright') \
                .replace('bottom-right-radius', 'radius-bottomright') \
                .replace('bottom-left-radius', 'radius-bottomleft')
-        props.append(cssutils.css.Property(
-            name=name,
-            value=self.prop.value,
-            priority=self.prop.priority
-            ))
-        return props
+        yield cssutils.css.Property(
+                name=name,
+                value=self.prop.value,
+                priority=self.prop.priority
+                )
 
 class DisplayReplacementRule(BaseReplacementRule):
     """
@@ -78,15 +76,13 @@ class DisplayReplacementRule(BaseReplacementRule):
     CSSUtils parser doesn't support duplicate properties, so that's dirty.
     """
     def get_prefixed_props(self):
-        props = []
         if self.prop.value == 'box':#only add prefixes if the value is box
             for prefix in self.vendor_prefixes:
-                props.append(cssutils.css.Property(
-                    name='display', 
-                    value='-%s-box' % prefix, 
-                    priority=self.prop.priority
-                    ))
-        return props
+                yield cssutils.css.Property(
+                        name='display', 
+                        value='-%s-box' % prefix, 
+                        priority=self.prop.priority
+                        )
 
 class TransitionReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['webkit', 'moz', 'o']
@@ -109,10 +105,8 @@ class TransitionReplacementRule(BaseReplacementRule):
                 )
     
     def get_prefixed_props(self):
-        props = []
         for prefix in self.vendor_prefixes:
-            props.append(self.__get_prefixed_prop(prefix))
-        return props
+            yield self.__get_prefixed_prop(prefix)
         
     def get_base_prop(self):
         return self.__get_prefixed_prop()
@@ -120,18 +114,16 @@ class TransitionReplacementRule(BaseReplacementRule):
 class OpacityReplacementRule(BaseReplacementRule):
     def get_prefixed_props(self):
         ieValue = float(self.prop.value)*100
-        return (
-            cssutils.css.Property(
+        yield cssutils.css.Property(
                 name='-ms-filter',
                 value='"progid:DXImageTransform.Microsoft.Alpha(Opacity=%d)"' % ieValue,
                 priority=self.prop.priority
-                ),
-            cssutils.css.Property(
+                )
+        yield cssutils.css.Property(
                 name='filter',
                 value='alpha(opacity=%d)' % ieValue,
                 priority=self.prop.priority
                 )
-        )
         
     @staticmethod
     def should_prefix():
