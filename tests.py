@@ -71,6 +71,24 @@ class PrefixerTestCase(unittest.TestCase):
     -o-transition: color 0.25s linear, -o-transform 0.15s linear 0.1s;
     transition: color 0.25s linear, transform 0.15s linear 0.1s
     }''')
+    
+    #This test failes but it shouln't.
+    #This failes becuase duplicate properties are removed,
+    #this duplicate property is valid and useful.
+    def _test_multi_transition(self):
+        self.assertEqual(cssprefixer.process('''div {
+    transition: color .25s linear;
+    transition: background-color .15s linear .1;
+    }''', minify=False), '''div {
+    -webkit-transition: color .25s linear;
+    -moz-transition: color .25s linear;
+    -o-transition: color .25s linear;
+    transition: color .25s linear;
+    -webkit-transition: background-color .15s linear .1;
+    -moz-transition: background-color .15s linear .1;
+    -o-transition: background-color .15s linear .1;
+    transition: background-color .15s linear .1
+    }''')
              
     def test_transition_property(self):
         self.assertEqual(cssprefixer.process('''div {
