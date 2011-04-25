@@ -21,10 +21,9 @@ from rules import prefixRegex
 
 def magic(ruleset, debug, minify):
     if hasattr(ruleset, 'style'): # Comments don't
-        ruleSet = set()
+        ruleSet = set(); rules = list()
         children = list(ruleset.style.children())
         ruleset.style = cssutils.css.CSSStyleDeclaration()#clear out the styles that were there
-        rules = list()
         for rule in children:
             if not hasattr(rule, 'name'):#comments don't have name
                 rules.append(rule)
@@ -34,12 +33,12 @@ def magic(ruleset, debug, minify):
                 continue
             ruleSet.add(rule.cssText)
             rules.append(rule)
-            
+
         ruleset.style.seq._readonly = False
         for rule in rules:
             if not hasattr(rule, 'name'):
                 ruleset.style.seq.append(rule, 'Comment')
-                continue        
+                continue
             processor = None
             if rule.name in tr_rules:
                 processor = tr_rules[rule.name](rule)
@@ -55,7 +54,7 @@ def magic(ruleset, debug, minify):
             magic(subruleset, debug, minify)
     cssText = ruleset.cssText
     if not cssText:#blank rules return None so return an empty string
-        return ''
+        return
     if minify or not hasattr(ruleset, 'style'):
         return unicode(cssText)
     return unicode(cssText)+'\n'
@@ -71,24 +70,19 @@ def process(string, debug=False, minify=False, **prefs):
     for key, value in prefs.iteritems():
         if hasattr(cssutils.ser.prefs, key):
             cssutils.ser.prefs.__dict__[key] = value
-    sheet = parser.parseString(string)
-    
+
     results = []
+    sheet = parser.parseString(string)
     for ruleset in sheet.cssRules:
         cssText = magic(ruleset, debug, minify)
         if cssText:
             results.append(cssText)
-            
+
     #format with newlines based on minify
     joinStr = '' if minify else '\n'
-    
+
     # Not using sheet.cssText - it's buggy:
     # it skips some prefixed properties.
     return joinStr.join(results).rstrip()
 
 __all__ = ('process')
-
-
-
-
-

@@ -41,7 +41,7 @@ class PrefixerTestCase(unittest.TestCase):
     def test_flexbox(self):
         self.assertEqual(cssprefixer.process('a{display: box;}', minify=True),
                          'a{display:-webkit-box;display:-moz-box;display:box}')
-                         
+
     def test_displaybox(self):
         self.assertEqual(cssprefixer.process('a{display: display;}', minify=True),
                          'a{display:display}')
@@ -49,18 +49,22 @@ class PrefixerTestCase(unittest.TestCase):
     def test_mq(self):
         self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{color:red}}', minify=True),
                          '@media screen and (min-width:480px){a{color:red}}')
-                         
+
     def test_mq_common(self):
         self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{border-radius: 1em}}', minify=True),
                          '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')
-                         
+
     def test_duplicate_common(self):
         self.assertEqual(cssprefixer.process('a{border-radius: 1em;border-radius: 2em;border-radius: 3em}', minify=True),
                          'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em;-webkit-border-radius:2em;-moz-border-radius:2em;border-radius:2em;-webkit-border-radius:3em;-moz-border-radius:3em;border-radius:3em}')
-                         
+
     def test_mixed_common(self):
         self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em;border-radius: 2em;-webkit-border-radius: 3em}', minify=True),
                          'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em;-webkit-border-radius:2em;-moz-border-radius:2em;border-radius:2em;-webkit-border-radius:3em;-moz-border-radius:3em;border-radius:3em}')
+
+    def test_mixed_duplicate(self):
+        self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em;border-radius: 1em;-webkit-border-radius: 1em}', minify=True),
+                         'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}')
 
     def test_transition(self):
         self.assertEqual(cssprefixer.process('''div {
@@ -71,10 +75,7 @@ class PrefixerTestCase(unittest.TestCase):
     -o-transition: color 0.25s linear, -o-transform 0.15s linear 0.1s;
     transition: color 0.25s linear, transform 0.15s linear 0.1s
     }''')
-    
-    #This test failes but it shouln't.
-    #This failes becuase duplicate properties are removed,
-    #this duplicate property is valid and useful.
+
     def test_multi_transition(self):
         self.assertEqual(cssprefixer.process('''div {
     transition: color .25s linear;
@@ -89,7 +90,7 @@ class PrefixerTestCase(unittest.TestCase):
     -o-transition: background-color 0.15s linear 0.1;
     transition: background-color 0.15s linear 0.1
     }''')
-             
+
     def test_transition_property(self):
         self.assertEqual(cssprefixer.process('''div {
     -webkit-transition-property: -webkit-transform, opacity, left;
@@ -104,7 +105,7 @@ class PrefixerTestCase(unittest.TestCase):
     -o-transition-duration: rotatey(45deg), 2s, 4s;
     transition-duration: rotatey(45deg), 2s, 4s
     }''')
-    
+
     def test_opacity(self):
         self.assertEqual(cssprefixer.process('''a {
     opacity: 0.25;
@@ -112,8 +113,8 @@ class PrefixerTestCase(unittest.TestCase):
     -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
     filter: alpha(opacity=25);
     opacity: 0.25
-    }''')    
-                 
+    }''')
+
     def test_no_mini(self):
         self.assertEqual(cssprefixer.process('''.my-class, #my-id {
     border-radius: 1em;
@@ -139,7 +140,7 @@ class PrefixerTestCase(unittest.TestCase):
     def test_empty(self):
         self.assertEqual(cssprefixer.process('a{}', minify=True), '')
         self.assertEqual(cssprefixer.process('a{}', minify=False), '')
-        
+
     def test_media_no_mini(self):
         self.assertEqual(cssprefixer.process('''@media screen and (max-device-width: 480px){
     #book{
@@ -152,7 +153,7 @@ class PrefixerTestCase(unittest.TestCase):
         border-radius: 1em
         }
     }''')
-    
+
     def test_comment(self):
         self.assertEqual(cssprefixer.process('''/* HTML5 display-role reset for older browsers */
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
@@ -161,7 +162,7 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
     display: block
     }''')
-    
+
     def test_inline_comment(self):
         #TODO: it would be nice if comments on the same line remained there, but this may not be possible because
         #cssutils tears everything apart into objects and then we rebuild it.
@@ -177,17 +178,17 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
     }''', minify=False), '''article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, section {
     /* HTML5 display-role reset for older browsers */
     display: block
-    }''')        
-                         
+    }''')
+
 class WebkitPrefixerTestCase(unittest.TestCase):
     def test_common(self):
         self.assertEqual(cssprefixer.process('a{-webkit-border-radius: 1em}', minify=True),
                          'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}')
-                         
+
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-webkit-transform: rotate(10deg)}', minify=True),
                          'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
-                         
+
     def test_webkit(self):
         self.assertEqual(cssprefixer.process('a{-webkit-background-clip: padding-box}', minify=True),
                          'a{-webkit-background-clip:padding-box;background-clip:padding-box}')
@@ -195,50 +196,50 @@ class WebkitPrefixerTestCase(unittest.TestCase):
     def test_moz_border_radius(self):
         self.assertEqual(cssprefixer.process('a{-webkit-border-top-left-radius: 1em;-webkit-border-top-right-radius: 1em;-webkit-border-bottom-right-radius: 1em;-webkit-border-bottom-left-radius: 1em;}', minify=True),
                          'a{-webkit-border-top-left-radius:1em;-moz-border-radius-topleft:1em;border-top-left-radius:1em;-webkit-border-top-right-radius:1em;-moz-border-radius-topright:1em;border-top-right-radius:1em;-webkit-border-bottom-right-radius:1em;-moz-border-radius-bottomright:1em;border-bottom-right-radius:1em;-webkit-border-bottom-left-radius:1em;-moz-border-radius-bottomleft:1em;border-bottom-left-radius:1em}')
-                         
+
     def test_flexbox(self):
         self.assertEqual(cssprefixer.process('a{-webkit-display: box;}', minify=True),
                          'a{display:-webkit-box;display:-moz-box;display:box}')
-                         
+
     def test_mq_common(self):
         self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{-webkit-border-radius: 1em}}', minify=True),
-                         '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')                           
-                         
+                         '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')
+
 class MozPrefixerTestCase(unittest.TestCase):
     def test_common(self):
         self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em}', minify=True),
                          'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}')
-                         
+
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-moz-transform: rotate(10deg)}', minify=True),
                          'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
-                         
+
     def test_moz_border_radius(self):
         self.assertEqual(cssprefixer.process('a{-moz-border-top-left-radius: 1em;-moz-border-top-right-radius: 1em;-moz-border-bottom-right-radius: 1em;-moz-border-bottom-left-radius: 1em;}', minify=True),
                          'a{-webkit-border-top-left-radius:1em;-moz-border-radius-topleft:1em;border-top-left-radius:1em;-webkit-border-top-right-radius:1em;-moz-border-radius-topright:1em;border-top-right-radius:1em;-webkit-border-bottom-right-radius:1em;-moz-border-radius-bottomright:1em;border-bottom-right-radius:1em;-webkit-border-bottom-left-radius:1em;-moz-border-radius-bottomleft:1em;border-bottom-left-radius:1em}')
-                         
+
     def test_flexbox(self):
         self.assertEqual(cssprefixer.process('a{-moz-display: box;}', minify=True),
-                         'a{display:-webkit-box;display:-moz-box;display:box}')  
-                         
+                         'a{display:-webkit-box;display:-moz-box;display:box}')
+
     def test_mq_common(self):
         self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{-moz-border-radius: 1em}}', minify=True),
-                         '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')                        
-                         
+                         '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')
+
 class OperaPrefixerTestCase(unittest.TestCase):
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-o-transform: rotate(10deg)}', minify=True),
                          'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
-                         
+
     def test_ie_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-o-text-overflow: ellipsis}', minify=True),
-                         'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')                         
+                         'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')
 
 class IePrefixerTestCase(unittest.TestCase):
     def test_ie_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-ms-text-overflow: ellipsis}', minify=True),
-                         'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')   
-             
+                         'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')
+
 class GradientTestCase(unittest.TestCase):
     def test_basic(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
@@ -250,8 +251,8 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(top, #444, #999);
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
-    }''') 
-    
+    }''')
+
     def test_linear_no_pos(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: linear-gradient(#444444, #999999);
@@ -262,7 +263,7 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(#444, #999);
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(#444, #999)
-    }''')     
+    }''')
 
     def test_webkit(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
@@ -274,8 +275,8 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(top, #444, #999);
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
-    }''')  
-        
+    }''')
+
     def test_webkit_mixed(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -webkit-linear-gradient(top, #444444, #999999), linear-gradient(top, black, white);
@@ -286,8 +287,8 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(top, #444, #999), -o-linear-gradient(top, black, white);
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999), linear-gradient(top, black, white)
-    }''')  
-    
+    }''')
+
     def test_moz(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -moz-linear-gradient(top, #444444, #999999);
@@ -298,8 +299,8 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(top, #444, #999);
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
-    }''') 
-    
+    }''')
+
     def test_o(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -o-linear-gradient(top, #444444, #999999);
@@ -311,7 +312,7 @@ class GradientTestCase(unittest.TestCase):
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
     }''')
-    
+
     def test_webkit_gradient(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
@@ -323,7 +324,7 @@ class GradientTestCase(unittest.TestCase):
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(#444, #999)
     }''')
-    
+
     def test_webkit_gradient_mixed(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-linear-gradient(top, black, white);
@@ -335,7 +336,7 @@ class GradientTestCase(unittest.TestCase):
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(#444, #999), linear-gradient(top, black, white)
     }''')
-    
+
     def test_image(self):
         #I don't think this test produces valid css but it shows that data and order is being preserved.
         self.assertEqual(cssprefixer.process('''.box_gradient {
@@ -348,14 +349,14 @@ class GradientTestCase(unittest.TestCase):
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
     background-image: url(images/background.png), linear-gradient(top, black, white)
     }''')
-    
+
     def test_background_multiple_images(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background: url(images/cross.png), url(images/gradient.png) top center no-repeat, url(images/background.png);
     }''', minify=False), '''.box_gradient {
     background: url(images/cross.png), url(images/gradient.png) top center no-repeat, url(images/background.png)
-    }''') 
-    
+    }''')
+
     def test_background_multiple_images_and_gradient(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
@@ -367,7 +368,7 @@ class GradientTestCase(unittest.TestCase):
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png)
     }''')
-    
+
     def test_background_multiple_images_and_gradients(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -moz-linear-gradient(top, #444444, #999999);
@@ -380,6 +381,6 @@ class GradientTestCase(unittest.TestCase):
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), linear-gradient(top, #444, #999)
     }''')
 
-  
+
 if __name__ == '__main__':
     unittest.main()

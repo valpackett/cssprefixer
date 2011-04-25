@@ -31,7 +31,7 @@ class BaseReplacementRule(object):
                     value=self.prop.value,
                     priority=self.prop.priority
                     )
-        
+
     @staticmethod
     def should_prefix():
         return True
@@ -79,14 +79,14 @@ class DisplayReplacementRule(BaseReplacementRule):
         if self.prop.value == 'box':#only add prefixes if the value is box
             for prefix in self.vendor_prefixes:
                 yield cssutils.css.Property(
-                        name='display', 
-                        value='-%s-box' % prefix, 
+                        name='display',
+                        value='-%s-box' % prefix,
                         priority=self.prop.priority
                         )
 
 class TransitionReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['webkit', 'moz', 'o']
-    
+
     def __get_prefixed_prop(self, prefix=None):
         name = self.prop.name
         if prefix:
@@ -103,11 +103,11 @@ class TransitionReplacementRule(BaseReplacementRule):
                 value=', '.join(newValues),
                 priority=self.prop.priority
                 )
-    
+
     def get_prefixed_props(self):
         for prefix in self.vendor_prefixes:
             yield self.__get_prefixed_prop(prefix)
-        
+
     def get_base_prop(self):
         return self.__get_prefixed_prop()
 
@@ -124,14 +124,14 @@ class OpacityReplacementRule(BaseReplacementRule):
                 value='alpha(opacity=%d)' % ieValue,
                 priority=self.prop.priority
                 )
-        
+
     @staticmethod
     def should_prefix():
-        return False        
+        return False
 
 class GradientReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['webkit', 'moz', 'o']
-    
+
     def __iter_values(self):
         valueSplit = self.prop.value.split(',')
         index = 0
@@ -157,7 +157,7 @@ class GradientReplacementRule(BaseReplacementRule):
                         'pos': values[0],
                         'start': values[1],
                         'end': values[2]
-                        }                    
+                        }
                 index += len(values)
             elif snip.startswith('gradient'):
                 yield {
@@ -169,7 +169,7 @@ class GradientReplacementRule(BaseReplacementRule):
                 #not a gradient so just yield the raw string
                 yield snip
                 index += 1
-                
+
     def __get_prefixed_prop(self, values, prefix=None):
         gradientName = 'linear-gradient'
         if prefix:
@@ -188,7 +188,7 @@ class GradientReplacementRule(BaseReplacementRule):
                 value=', '.join(newValues),
                 priority=self.prop.priority
                 )
-                
+
     def get_prefixed_props(self):
         values = list(self.__iter_values())
         needPrefix = False
@@ -205,7 +205,7 @@ class GradientReplacementRule(BaseReplacementRule):
                         if isinstance(value, dict):
                             newValues.append('-webkit-gradient(linear, left top, left bottom, color-stop(0, %(start)s), color-stop(1, %(end)s))' % value)
                         else:
-                            newValues.append(value)                        
+                            newValues.append(value)
                     yield cssutils.css.Property(
                             name=self.prop.name,
                             value=', '.join(newValues),
@@ -222,10 +222,10 @@ class GradientReplacementRule(BaseReplacementRule):
                     break
         else:
             yield None
-            
+
     def get_base_prop(self):
         values = self.__iter_values()
-        return self.__get_prefixed_prop(values)            
+        return self.__get_prefixed_prop(values)
 
 rules = {
     'border-radius': BaseReplacementRule,
@@ -275,6 +275,6 @@ rules = {
     'transform-origin': FullReplacementRule,
 
     'display': DisplayReplacementRule,
-    
-    'opacity': OpacityReplacementRule,    
+
+    'opacity': OpacityReplacementRule,
 }
