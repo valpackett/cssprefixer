@@ -380,7 +380,20 @@ class GradientTestCase(unittest.TestCase):
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), linear-gradient(top, #444, #999)
     }''')
-
+    
+    #cssutils cannot parse this rule
+    def _test_background_multiple_images_and_gradients(self):
+        self.assertEqual(cssprefixer.process('''.box_gradient {
+    background-image:
+        url('../img/arrow.png'),
+        -webkit-gradient(
+        linear,
+        left top,
+        left bottom,
+        from(rgb(240, 240, 240)),
+        to(rgb(210, 210, 210))
+    )}''', minify=False), '''.box_gradient {
+    }''')
 
 if __name__ == '__main__':
     unittest.main()

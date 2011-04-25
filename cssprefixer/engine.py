@@ -40,13 +40,18 @@ def magic(ruleset, debug, minify):
                 ruleset.style.seq.append(rule, 'Comment')
                 continue
             processor = None
-            if rule.name in tr_rules:
-                processor = tr_rules[rule.name](rule)
-                [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props() if prop]
-            #always add the original rule
-            if processor and hasattr(processor, 'get_base_prop'):
-                ruleset.style.seq.append(processor.get_base_prop(), 'Property')
-            else:
+            try:
+                if rule.name in tr_rules:
+                    processor = tr_rules[rule.name](rule)
+                    [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props() if prop]
+                #always add the original rule
+                if processor and hasattr(processor, 'get_base_prop'):
+                    ruleset.style.seq.append(processor.get_base_prop(), 'Property')
+                else:
+                    ruleset.style.seq.append(rule, 'Property')
+            except:
+                if debug:
+                    print 'warning with ' + str(rule)
                 ruleset.style.seq.append(rule, 'Property')
         ruleset.style.seq._readonly = True
     elif hasattr(ruleset, 'cssRules'):
