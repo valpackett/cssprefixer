@@ -26,9 +26,21 @@ class PrefixerTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('a{transform: rotate(10deg)}', minify=True),
                          'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
 
+    def test_undefined(self):
+        #test prefixed styles that don't have a rule yet, we use a fake property 
+        #for this test becuase we will never have a rule for this
+        self.assertEqual(cssprefixer.process('a{-webkit-faker: black}', minify=True),
+                         'a{-webkit-faker:black}')
+
     def test_webkit(self):
         self.assertEqual(cssprefixer.process('a{background-clip: padding-box}', minify=True),
                          'a{-webkit-background-clip:padding-box;background-clip:padding-box}')
+
+    def test_appearance(self):
+        #test prefixed styles that don't have a rule yet, we use a fake property 
+        #for this test becuase we will never have a rule for this
+        self.assertEqual(cssprefixer.process('a{-webkit-appearance: none;}', minify=True),
+                         'a{-webkit-appearance:none;appearance:none}')
 
     def test_ie_and_opera(self):
         self.assertEqual(cssprefixer.process('a{text-overflow: ellipsis}', minify=True),

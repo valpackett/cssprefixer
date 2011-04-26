@@ -275,6 +275,6 @@ rules = {
     'transform-origin': FullReplacementRule,
 
     'display': DisplayReplacementRule,
-
     'opacity': OpacityReplacementRule,
+    'appearance': WebkitReplacementRule,
 }

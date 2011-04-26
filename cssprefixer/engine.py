@@ -28,7 +28,9 @@ def magic(ruleset, debug, minify):
             if not hasattr(rule, 'name'):#comments don't have name
                 rules.append(rule)
                 continue
-            rule.name = prefixRegex.sub('', rule.name)
+            name = prefixRegex.sub('', rule.name)
+            if name in tr_rules:
+                rule.name = name
             if rule.cssText in ruleSet:
                 continue
             ruleSet.add(rule.cssText)
@@ -40,7 +42,7 @@ def magic(ruleset, debug, minify):
                 ruleset.style.seq.append(rule, 'Comment')
                 continue
             processor = None
-            try:
+            try:#try except so if anything goes wrong we don't lose the original property
                 if rule.name in tr_rules:
                     processor = tr_rules[rule.name](rule)
                     [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props() if prop]
