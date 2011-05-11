@@ -6,13 +6,14 @@ from distutils.core import setup
 #     sys.exit('Python 2.5 or higher is required')
 
 setup(name='cssprefixer',
-      version='1.3',
+      version='1.4',
       description="A tool that rewrites your CSS files, adding vendor-prefixed versions of CSS3 rules.",
 #      long_description="""""",
       license='Apache License 2.0',
       author='myfreeweb',
       author_email='me@myfreeweb.ru',
-      url='http://github.com/myfreeweb/cssprefixer',
+      url='https://github.com/myfreeweb/cssprefixer',
+      requires=['cssutils'],
       packages=['cssprefixer'],
       scripts=['scripts/cssprefixer'],
       keywords=['CSS', 'Cascading Style Sheets'],

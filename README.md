@@ -1,7 +1,7 @@
 # CSSPrefixer #
 A tool that rewrites your CSS files, adding vendor-prefixed versions of (popular) CSS3 rules. It also can combine and minify your stylesheets. **Keep your styles clean!**
 
-It supports many CSS3 stuff including Flexbox, but not Gradients yet.
+It supports many CSS3 stuff including Flexbox and Gradients.
 
 For example, this
     #wrapper {
@@ -12,15 +12,19 @@ For example, this
 becomes this:
     #wrapper {
         -moz-border-radius: 1em;
+        -webkit-border-radius: 1em;
+        border-radius: 1em;
         -o-transform: rotate(45deg);
         -moz-transform: rotate(45deg);
         -webkit-transform: rotate(45deg);
-        -webkit-border-radius: 1em;
-        border-radius: 1em;
         transform: rotate(45deg)
     }
 
 Requires [cssutils](http://cthedot.de/cssutils/).
+
+## Contributors ##
+- [InScopeApps](https://github.com/InScopeApps)
+- you?
 
 ## How to install ##
     $ easy_install cssutils #or 'pip install cssutils' if you have pip
