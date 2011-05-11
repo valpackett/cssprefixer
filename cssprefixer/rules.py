@@ -38,11 +38,12 @@ class BaseReplacementRule(object):
 
 
 class FullReplacementRule(BaseReplacementRule):
-    """
-    IE9 implements CSS3 without vendor prefixes,
-    so this is base + Opera.
-    """
+    vendor_prefixes = BaseReplacementRule.vendor_prefixes + ['o', 'ms']
 
+class BaseAndIEReplacementRule(BaseReplacementRule):
+    vendor_prefixes = BaseReplacementRule.vendor_prefixes + ['ms']
+
+class BaseAndOperaReplacementRule(BaseReplacementRule):
     vendor_prefixes = BaseReplacementRule.vendor_prefixes + ['o']
 
 class WebkitReplacementRule(BaseReplacementRule):
@@ -50,6 +51,9 @@ class WebkitReplacementRule(BaseReplacementRule):
 
 class OperaAndIEReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['o', 'ms']
+
+class MozReplacementRule(BaseReplacementRule):
+    vendor_prefixes = ['moz']
 
 class BorderRadiusReplacementRule(BaseReplacementRule):
     """
@@ -235,15 +239,15 @@ rules = {
     'border-bottom-left-radius': BorderRadiusReplacementRule,
     'border-image': FullReplacementRule,
     'box-shadow': BaseReplacementRule,
-    'box-sizing': BaseReplacementRule,
-    'box-orient': BaseReplacementRule,
-    'box-direction': BaseReplacementRule,
-    'box-ordinal-group': BaseReplacementRule,
-    'box-align': BaseReplacementRule,
-    'box-flex': BaseReplacementRule,
+    'box-sizing': MozReplacementRule,
+    'box-orient': BaseAndIEReplacementRule,
+    'box-direction': BaseAndIEReplacementRule,
+    'box-ordinal-group': BaseAndIEReplacementRule,
+    'box-align': BaseAndIEReplacementRule,
+    'box-flex': BaseAndIEReplacementRule,
     'box-flex-group': BaseReplacementRule,
-    'box-pack': BaseReplacementRule,
-    'box-lines': BaseReplacementRule,
+    'box-pack': BaseAndIEReplacementRule,
+    'box-lines': BaseAndIEReplacementRule,
     'user-select': BaseReplacementRule,
     'user-modify': BaseReplacementRule,
     'margin-start': BaseReplacementRule,
@@ -256,7 +260,9 @@ rules = {
     'column-rule-color': BaseReplacementRule,
     'column-rule-style': BaseReplacementRule,
     'column-rule-width': BaseReplacementRule,
+    'column-span': WebkitReplacementRule,
     'column-width': BaseReplacementRule,
+    'columns': WebkitReplacementRule,
 
     'background-clip': WebkitReplacementRule,
     'background-origin': WebkitReplacementRule,
@@ -267,10 +273,10 @@ rules = {
     'text-overflow': OperaAndIEReplacementRule,
 
     'transition': TransitionReplacementRule,
-    'transition-delay': FullReplacementRule,
-    'transition-duration': FullReplacementRule,
+    'transition-delay': BaseAndOperaReplacementRule,
+    'transition-duration': BaseAndOperaReplacementRule,
     'transition-property': TransitionReplacementRule,
-    'transition-timing-function': FullReplacementRule,
+    'transition-timing-function': BaseAndOperaReplacementRule,
     'transform': FullReplacementRule,
     'transform-origin': FullReplacementRule,
 
