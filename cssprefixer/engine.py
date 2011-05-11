@@ -67,7 +67,7 @@ def magic(ruleset, debug, minify):
     return unicode(cssText)+'\n'
 
 def process(string, debug=False, minify=False, **prefs):
-    loglevel = 'info' if debug else 'error'
+    loglevel = 'DEBUG' if debug else 'ERROR'
     parser = cssutils.CSSParser(loglevel=loglevel)
     if minify:
         cssutils.ser.prefs.useMinified()
