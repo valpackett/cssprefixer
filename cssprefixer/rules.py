@@ -283,4 +283,5 @@ rules = {
     'display': DisplayReplacementRule,
     'opacity': OpacityReplacementRule,
     'appearance': WebkitReplacementRule,
+    'hyphens': BaseReplacementRule,
 }
