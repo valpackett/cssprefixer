@@ -1,7 +1,7 @@
 # CSSPrefixer #
 A tool that rewrites your CSS files, adding vendor-prefixed versions of (popular) CSS3 rules. It also can combine and minify your stylesheets. **Keep your styles clean!**
 
-It supports many CSS3 stuff including Flexbox and Gradients.
+It supports many CSS3 stuff including keyframe animations, Flexbox and gradients.
 
 For example, this
     #wrapper {

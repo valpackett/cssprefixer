@@ -1,5 +1,5 @@
 # CSSPrefixer
-# Copyright 2010 MyFreeWeb <me@myfreeweb.ru>
+# Copyright 2010-2011 MyFreeWeb <floatboth@me.com>
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -24,8 +24,8 @@ class BaseReplacementRule(object):
     def __init__(self, prop):
         self.prop = prop
 
-    def get_prefixed_props(self):
-        for prefix in self.vendor_prefixes:
+    def get_prefixed_props(self, filt):
+        for prefix in [p for p in self.vendor_prefixes if p in filt]:
             yield cssutils.css.Property(
                     name='-%s-%s' % (prefix, self.prop.name),
                     value=self.prop.value,
@@ -61,27 +61,28 @@ class BorderRadiusReplacementRule(BaseReplacementRule):
     """
     vendor_prefixes = ['webkit']
 
-    def get_prefixed_props(self):
-        for prop in BaseReplacementRule.get_prefixed_props(self):
+    def get_prefixed_props(self, filt):
+        for prop in BaseReplacementRule.get_prefixed_props(self, filt):
             yield prop
-        name = '-moz-' + self.prop.name.replace('top-left-radius', 'radius-topleft') \
-               .replace('top-right-radius', 'radius-topright') \
-               .replace('bottom-right-radius', 'radius-bottomright') \
-               .replace('bottom-left-radius', 'radius-bottomleft')
-        yield cssutils.css.Property(
-                name=name,
-                value=self.prop.value,
-                priority=self.prop.priority
-                )
+        if 'moz' in filt:
+            name = '-moz-' + self.prop.name.replace('top-left-radius', 'radius-topleft') \
+                   .replace('top-right-radius', 'radius-topright') \
+                   .replace('bottom-right-radius', 'radius-bottomright') \
+                   .replace('bottom-left-radius', 'radius-bottomleft')
+            yield cssutils.css.Property(
+                    name=name,
+                    value=self.prop.value,
+                    priority=self.prop.priority
+                    )
 
 class DisplayReplacementRule(BaseReplacementRule):
     """
     Flexible Box Model stuff.
     CSSUtils parser doesn't support duplicate properties, so that's dirty.
     """
-    def get_prefixed_props(self):
+    def get_prefixed_props(self, filt):
         if self.prop.value == 'box':#only add prefixes if the value is box
-            for prefix in self.vendor_prefixes:
+            for prefix in [p for p in self.vendor_prefixes if p in filt]:
                 yield cssutils.css.Property(
                         name='display',
                         value='-%s-box' % prefix,
@@ -108,26 +109,27 @@ class TransitionReplacementRule(BaseReplacementRule):
                 priority=self.prop.priority
                 )
 
-    def get_prefixed_props(self):
-        for prefix in self.vendor_prefixes:
+    def get_prefixed_props(self, filt):
+        for prefix in [p for p in self.vendor_prefixes if p in filt]:
             yield self.__get_prefixed_prop(prefix)
 
     def get_base_prop(self):
         return self.__get_prefixed_prop()
 
 class OpacityReplacementRule(BaseReplacementRule):
-    def get_prefixed_props(self):
-        ieValue = float(self.prop.value)*100
-        yield cssutils.css.Property(
-                name='-ms-filter',
-                value='"progid:DXImageTransform.Microsoft.Alpha(Opacity=%d)"' % ieValue,
-                priority=self.prop.priority
-                )
-        yield cssutils.css.Property(
-                name='filter',
-                value='alpha(opacity=%d)' % ieValue,
-                priority=self.prop.priority
-                )
+    def get_prefixed_props(self, filt):
+        if 'ms' in filt:
+            ieValue = float(self.prop.value)*100
+            yield cssutils.css.Property(
+                    name='-ms-filter',
+                    value='"progid:DXImageTransform.Microsoft.Alpha(Opacity=%d)"' % ieValue,
+                    priority=self.prop.priority
+                    )
+            yield cssutils.css.Property(
+                    name='filter',
+                    value='alpha(opacity=%d)' % ieValue,
+                    priority=self.prop.priority
+                    )
 
     @staticmethod
     def should_prefix():
@@ -193,7 +195,7 @@ class GradientReplacementRule(BaseReplacementRule):
                 priority=self.prop.priority
                 )
 
-    def get_prefixed_props(self):
+    def get_prefixed_props(self, filt):
         values = list(self.__iter_values())
         needPrefix = False
         for value in values:#check if there are any gradients
@@ -201,7 +203,7 @@ class GradientReplacementRule(BaseReplacementRule):
                 needPrefix = True
                 break
         if needPrefix:
-            for prefix in self.vendor_prefixes:
+            for prefix in [p for p in self.vendor_prefixes if p in filt]:
                 yield self.__get_prefixed_prop(values, prefix)
                 if prefix == 'webkit':
                     newValues = []

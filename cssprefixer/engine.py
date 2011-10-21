@@ -1,5 +1,5 @@
 # CSSPrefixer
-# Copyright 2010 MyFreeWeb <me@myfreeweb.ru>
+# Copyright 2010-2011 MyFreeWeb <floatboth@me.com>
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -14,13 +14,27 @@
 # limitations under the License.
 
 import cssutils
-
 import re
 from rules import rules as tr_rules
 from rules import prefixRegex
 
-def magic(ruleset, debug, minify):
-    if hasattr(ruleset, 'style'): # Comments don't
+def magic(ruleset, debug, minify, filt, parser):
+    if isinstance(ruleset, cssutils.css.CSSUnknownRule):
+        if ruleset.cssText.startswith('@keyframes'):
+            inner = parser.parseString(re.split(r'@keyframes\s?\w+\s?{(.*)}', ruleset.cssText.replace('\n', ''))[1])
+            # TODO: DRY, un-mess this up
+            # BUG: doesn't work when minified
+            s = '' if minify else '\n'
+            return '@-webkit-keyframes {' + s + \
+            ''.join([magic(rs, debug, minify, ['webkit'], parser) for rs in inner]) \
+            + '}' + s + '@-moz-keyframes {' + s + \
+            ''.join([magic(rs, debug, minify, ['moz'], parser) for rs in inner]) \
+            + '}' + s + ruleset.cssText
+        elif ruleset.cssText.startswith('from') or ruleset.cssText.startswith('to'):
+            return "".join([magic(rs, debug, minify, filt, parser) for rs in parser.parseString(re.sub(r'\w+\s?\{(.*)\}', r'\1', ruleset.cssText.replace('\n', ''))[1])])
+        else:
+            return
+    elif hasattr(ruleset, 'style'): # Comments don't
         ruleSet = set(); rules = list()
         children = list(ruleset.style.children())
         ruleset.style = cssutils.css.CSSStyleDeclaration()#clear out the styles that were there
@@ -45,7 +59,7 @@ def magic(ruleset, debug, minify):
             try:#try except so if anything goes wrong we don't lose the original property
                 if rule.name in tr_rules:
                     processor = tr_rules[rule.name](rule)
-                    [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props() if prop]
+                    [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props(filt) if prop]
                 #always add the original rule
                 if processor and hasattr(processor, 'get_base_prop'):
                     ruleset.style.seq.append(processor.get_base_prop(), 'Property')
@@ -58,7 +72,7 @@ def magic(ruleset, debug, minify):
         ruleset.style.seq._readonly = True
     elif hasattr(ruleset, 'cssRules'):
         for subruleset in ruleset:
-            magic(subruleset, debug, minify)
+            magic(subruleset, debug, minify, filt, parser)
     cssText = ruleset.cssText
     if not cssText:#blank rules return None so return an empty string
         return
@@ -66,7 +80,7 @@ def magic(ruleset, debug, minify):
         return unicode(cssText)
     return unicode(cssText)+'\n'
 
-def process(string, debug=False, minify=False, **prefs):
+def process(string, debug=False, minify=False, filt=['webkit', 'moz', 'o', 'ms'], **prefs):
     loglevel = 'DEBUG' if debug else 'ERROR'
     parser = cssutils.CSSParser(loglevel=loglevel)
     if minify:
@@ -81,7 +95,7 @@ def process(string, debug=False, minify=False, **prefs):
     results = []
     sheet = parser.parseString(string)
     for ruleset in sheet.cssRules:
-        cssText = magic(ruleset, debug, minify)
+        cssText = magic(ruleset, debug, minify, filt, parser)
         if cssText:
             results.append(cssText)
 

@@ -27,7 +27,7 @@ class PrefixerTestCase(unittest.TestCase):
                          'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
 
     def test_undefined(self):
-        #test prefixed styles that don't have a rule yet, we use a fake property 
+        #test prefixed styles that don't have a rule yet, we use a fake property
         #for this test becuase we will never have a rule for this
         self.assertEqual(cssprefixer.process('a{-webkit-faker: black}', minify=True),
                          'a{-webkit-faker:black}')
@@ -37,7 +37,7 @@ class PrefixerTestCase(unittest.TestCase):
                          'a{-webkit-background-clip:padding-box;background-clip:padding-box}')
 
     def test_appearance(self):
-        #test prefixed styles that don't have a rule yet, we use a fake property 
+        #test prefixed styles that don't have a rule yet, we use a fake property
         #for this test becuase we will never have a rule for this
         self.assertEqual(cssprefixer.process('a{-webkit-appearance: none;}', minify=True),
                          'a{-webkit-appearance:none;appearance:none}')
@@ -392,7 +392,7 @@ class GradientTestCase(unittest.TestCase):
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), linear-gradient(top, #444, #999)
     }''')
-    
+
     #cssutils cannot parse this rule
     def _test_background_multiple_images_and_gradients(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
@@ -406,6 +406,12 @@ class GradientTestCase(unittest.TestCase):
         to(rgb(210, 210, 210))
     )}''', minify=False), '''.box_gradient {
     }''')
+
+    def test_keyframes(self):
+        self.assertEqual(cssprefixer.process('''@keyframes round {
+    from {border-radius: 2px}
+    to {border-radius: 10px}
+    }''', minify=False), "@-webkit-keyframes {\nfrom {\n    -webkit-border-radius: 2px;\n    border-radius: 2px\n    }\nto {\n    -webkit-border-radius: 10px;\n    border-radius: 10px\n    }\n}\n@-moz-keyframes {\nfrom {\n    -moz-border-radius: 2px;\n    border-radius: 2px\n    }\nto {\n    -moz-border-radius: 10px;\n    border-radius: 10px\n    }\n}\n@keyframes round {\n    from {\n        border-radius: 2px\n        } to {\n        border-radius: 10px\n        }\n    }")
 
 if __name__ == '__main__':
     unittest.main()
