@@ -17,7 +17,7 @@ setup(name='cssprefixer',
       packages=['cssprefixer'],
       scripts=['scripts/cssprefixer'],
       keywords=['CSS', 'Cascading Style Sheets'],
-      classifiers = [
+      classifiers=[
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'Operating System :: OS Independent',

@@ -18,6 +18,7 @@ import cssutils
 
 prefixRegex = re.compile('^(-o-|-ms-|-moz-|-webkit-)')
 
+
 class BaseReplacementRule(object):
     vendor_prefixes = ['webkit', 'moz']
 
@@ -40,20 +41,26 @@ class BaseReplacementRule(object):
 class FullReplacementRule(BaseReplacementRule):
     vendor_prefixes = BaseReplacementRule.vendor_prefixes + ['o', 'ms']
 
+
 class BaseAndIEReplacementRule(BaseReplacementRule):
     vendor_prefixes = BaseReplacementRule.vendor_prefixes + ['ms']
+
 
 class BaseAndOperaReplacementRule(BaseReplacementRule):
     vendor_prefixes = BaseReplacementRule.vendor_prefixes + ['o']
 
+
 class WebkitReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['webkit']
+
 
 class OperaAndIEReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['o', 'ms']
 
+
 class MozReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['moz']
+
 
 class BorderRadiusReplacementRule(BaseReplacementRule):
     """
@@ -75,19 +82,21 @@ class BorderRadiusReplacementRule(BaseReplacementRule):
                     priority=self.prop.priority
                     )
 
+
 class DisplayReplacementRule(BaseReplacementRule):
     """
     Flexible Box Model stuff.
     CSSUtils parser doesn't support duplicate properties, so that's dirty.
     """
     def get_prefixed_props(self, filt):
-        if self.prop.value == 'box':#only add prefixes if the value is box
+        if self.prop.value == 'box':  # only add prefixes if the value is box
             for prefix in [p for p in self.vendor_prefixes if p in filt]:
                 yield cssutils.css.Property(
                         name='display',
                         value='-%s-box' % prefix,
                         priority=self.prop.priority
                         )
+
 
 class TransitionReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['webkit', 'moz', 'o']
@@ -116,10 +125,11 @@ class TransitionReplacementRule(BaseReplacementRule):
     def get_base_prop(self):
         return self.__get_prefixed_prop()
 
+
 class OpacityReplacementRule(BaseReplacementRule):
     def get_prefixed_props(self, filt):
         if 'ms' in filt:
-            ieValue = float(self.prop.value)*100
+            ieValue = float(self.prop.value) * 100
             yield cssutils.css.Property(
                     name='-ms-filter',
                     value='"progid:DXImageTransform.Microsoft.Alpha(Opacity=%d)"' % ieValue,
@@ -135,24 +145,25 @@ class OpacityReplacementRule(BaseReplacementRule):
     def should_prefix():
         return False
 
+
 class GradientReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['webkit', 'moz', 'o']
 
     def __iter_values(self):
         valueSplit = self.prop.value.split(',')
         index = 0
-        currentString = ''
+        # currentString = ''
         while(True):
             if index >= len(valueSplit):
                 break
             snip = prefixRegex.sub('', valueSplit[index].strip())
             if snip.startswith('linear-gradient'):
                 values = [re.sub('^linear-gradient\(', '', snip)]
-                if valueSplit[index+1].strip().endswith(')'):
-                    values.append(re.sub('\)+$', '', valueSplit[index+1].strip()))
+                if valueSplit[index + 1].strip().endswith(')'):
+                    values.append(re.sub('\)+$', '', valueSplit[index + 1].strip()))
                 else:
-                    values.append(valueSplit[index+1].strip())
-                    values.append(re.sub('\)+$', '', valueSplit[index+2].strip()))
+                    values.append(valueSplit[index + 1].strip())
+                    values.append(re.sub('\)+$', '', valueSplit[index + 2].strip()))
                 if len(values) == 2:
                     yield {
                         'start': values[0],
@@ -167,12 +178,12 @@ class GradientReplacementRule(BaseReplacementRule):
                 index += len(values)
             elif snip.startswith('gradient'):
                 yield {
-                    'start': re.sub('\)+$', '', valueSplit[index+4].strip()),
-                    'end': re.sub('\)+$', '', valueSplit[index+6].strip()),
+                    'start': re.sub('\)+$', '', valueSplit[index + 4].strip()),
+                    'end': re.sub('\)+$', '', valueSplit[index + 6].strip()),
                     }
                 index += 7
             else:
-                #not a gradient so just yield the raw string
+                # not a gradient so just yield the raw string
                 yield snip
                 index += 1
 
@@ -184,9 +195,9 @@ class GradientReplacementRule(BaseReplacementRule):
         for value in values:
             if isinstance(value, dict):
                 if 'pos' in value:
-                    newValues.append(gradientName+'(%(pos)s, %(start)s, %(end)s)' % value)
+                    newValues.append(gradientName + '(%(pos)s, %(start)s, %(end)s)' % value)
                 else:
-                    newValues.append(gradientName+'(%(start)s, %(end)s)' % value)
+                    newValues.append(gradientName + '(%(start)s, %(end)s)' % value)
             else:
                 newValues.append(value)
         return cssutils.css.Property(
@@ -198,7 +209,7 @@ class GradientReplacementRule(BaseReplacementRule):
     def get_prefixed_props(self, filt):
         values = list(self.__iter_values())
         needPrefix = False
-        for value in values:#check if there are any gradients
+        for value in values:  # check if there are any gradients
             if isinstance(value, dict):
                 needPrefix = True
                 break

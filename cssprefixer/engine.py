@@ -18,6 +18,7 @@ import re
 from rules import rules as tr_rules
 from rules import prefixRegex
 
+
 def magic(ruleset, debug, minify, filt, parser):
     if isinstance(ruleset, cssutils.css.CSSUnknownRule):
         if ruleset.cssText.startswith('@keyframes'):
@@ -34,12 +35,13 @@ def magic(ruleset, debug, minify, filt, parser):
             return "".join([magic(rs, debug, minify, filt, parser) for rs in parser.parseString(re.sub(r'\w+\s?\{(.*)\}', r'\1', ruleset.cssText.replace('\n', ''))[1])])
         else:
             return
-    elif hasattr(ruleset, 'style'): # Comments don't
-        ruleSet = set(); rules = list()
+    elif hasattr(ruleset, 'style'):  # Comments don't
+        ruleSet = set()
+        rules = list()
         children = list(ruleset.style.children())
-        ruleset.style = cssutils.css.CSSStyleDeclaration()#clear out the styles that were there
+        ruleset.style = cssutils.css.CSSStyleDeclaration()  # clear out the styles that were there
         for rule in children:
-            if not hasattr(rule, 'name'):#comments don't have name
+            if not hasattr(rule, 'name'):  # comments don't have name
                 rules.append(rule)
                 continue
             name = prefixRegex.sub('', rule.name)
@@ -56,11 +58,11 @@ def magic(ruleset, debug, minify, filt, parser):
                 ruleset.style.seq.append(rule, 'Comment')
                 continue
             processor = None
-            try:#try except so if anything goes wrong we don't lose the original property
+            try:  # try except so if anything goes wrong we don't lose the original property
                 if rule.name in tr_rules:
                     processor = tr_rules[rule.name](rule)
                     [ruleset.style.seq.append(prop, 'Property') for prop in processor.get_prefixed_props(filt) if prop]
-                #always add the original rule
+                # always add the original rule
                 if processor and hasattr(processor, 'get_base_prop'):
                     ruleset.style.seq.append(processor.get_base_prop(), 'Property')
                 else:
@@ -74,11 +76,12 @@ def magic(ruleset, debug, minify, filt, parser):
         for subruleset in ruleset:
             magic(subruleset, debug, minify, filt, parser)
     cssText = ruleset.cssText
-    if not cssText:#blank rules return None so return an empty string
+    if not cssText:  # blank rules return None so return an empty string
         return
     if minify or not hasattr(ruleset, 'style'):
         return unicode(cssText)
-    return unicode(cssText)+'\n'
+    return unicode(cssText) + '\n'
+
 
 def process(string, debug=False, minify=False, filt=['webkit', 'moz', 'o', 'ms'], **prefs):
     loglevel = 'DEBUG' if debug else 'ERROR'
