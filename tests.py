@@ -24,7 +24,7 @@ class PrefixerTestCase(unittest.TestCase):
 
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{transform: rotate(10deg)}', minify=True),
-                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
+                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);-ms-transform:rotate(10deg);transform:rotate(10deg)}')
 
     def test_undefined(self):
         #test prefixed styles that don't have a rule yet, we use a fake property
@@ -199,7 +199,7 @@ class WebkitPrefixerTestCase(unittest.TestCase):
 
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-webkit-transform: rotate(10deg)}', minify=True),
-                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
+                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);-ms-transform:rotate(10deg);transform:rotate(10deg)}')
 
     def test_webkit(self):
         self.assertEqual(cssprefixer.process('a{-webkit-background-clip: padding-box}', minify=True),
@@ -224,7 +224,7 @@ class MozPrefixerTestCase(unittest.TestCase):
 
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-moz-transform: rotate(10deg)}', minify=True),
-                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
+                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);-ms-transform:rotate(10deg);transform:rotate(10deg)}')
 
     def test_moz_border_radius(self):
         self.assertEqual(cssprefixer.process('a{-moz-border-top-left-radius: 1em;-moz-border-top-right-radius: 1em;-moz-border-bottom-right-radius: 1em;-moz-border-bottom-left-radius: 1em;}', minify=True),
@@ -241,7 +241,7 @@ class MozPrefixerTestCase(unittest.TestCase):
 class OperaPrefixerTestCase(unittest.TestCase):
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-o-transform: rotate(10deg)}', minify=True),
-                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);transform:rotate(10deg)}')
+                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);-ms-transform:rotate(10deg);transform:rotate(10deg)}')
 
     def test_ie_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-o-text-overflow: ellipsis}', minify=True),
