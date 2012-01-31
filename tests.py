@@ -15,16 +15,17 @@
 # limitations under the License.
 
 import unittest
+import google3
 import cssprefixer
 
 class PrefixerTestCase(unittest.TestCase):
     def test_common(self):
         self.assertEqual(cssprefixer.process('a{border-radius: 1em}', minify=True),
-                         'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}')
+                         'a{-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em}')
 
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{transform: rotate(10deg)}', minify=True),
-                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);-ms-transform:rotate(10deg);transform:rotate(10deg)}')
+                         'a{-moz-transform:rotate(10deg);-ms-transform:rotate(10deg);-o-transform:rotate(10deg);-webkit-transform:rotate(10deg);transform:rotate(10deg)}')
 
     def test_undefined(self):
         #test prefixed styles that don't have a rule yet, we use a fake property
@@ -44,7 +45,7 @@ class PrefixerTestCase(unittest.TestCase):
 
     def test_ie_and_opera(self):
         self.assertEqual(cssprefixer.process('a{text-overflow: ellipsis}', minify=True),
-                         'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')
+                         'a{-ms-text-overflow:ellipsis;-o-text-overflow:ellipsis;text-overflow:ellipsis}')
 
     def test_moz_border_radius(self):
         self.assertEqual(cssprefixer.process('a{border-top-left-radius: 1em;border-top-right-radius: 1em;border-bottom-right-radius: 1em;border-bottom-left-radius: 1em;}', minify=True),
@@ -52,7 +53,7 @@ class PrefixerTestCase(unittest.TestCase):
 
     def test_flexbox(self):
         self.assertEqual(cssprefixer.process('a{display: box;}', minify=True),
-                         'a{display:-webkit-box;display:-moz-box;display:box}')
+                         'a{display:-moz-box;display:-webkit-box;display:box}')
 
     def test_displaybox(self):
         self.assertEqual(cssprefixer.process('a{display: display;}', minify=True),
@@ -64,27 +65,27 @@ class PrefixerTestCase(unittest.TestCase):
 
     def test_mq_common(self):
         self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{border-radius: 1em}}', minify=True),
-                         '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')
+                         '@media screen and (min-width:480px){a{-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em}}')
 
     def test_duplicate_common(self):
         self.assertEqual(cssprefixer.process('a{border-radius: 1em;border-radius: 2em;border-radius: 3em}', minify=True),
-                         'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em;-webkit-border-radius:2em;-moz-border-radius:2em;border-radius:2em;-webkit-border-radius:3em;-moz-border-radius:3em;border-radius:3em}')
+                         'a{-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em;-moz-border-radius:2em;-webkit-border-radius:2em;border-radius:2em;-moz-border-radius:3em;-webkit-border-radius:3em;border-radius:3em}')
 
     def test_mixed_common(self):
         self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em;border-radius: 2em;-webkit-border-radius: 3em}', minify=True),
-                         'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em;-webkit-border-radius:2em;-moz-border-radius:2em;border-radius:2em;-webkit-border-radius:3em;-moz-border-radius:3em;border-radius:3em}')
+                         'a{-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em;-moz-border-radius:2em;-webkit-border-radius:2em;border-radius:2em;-moz-border-radius:3em;-webkit-border-radius:3em;border-radius:3em}')
 
     def test_mixed_duplicate(self):
         self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em;border-radius: 1em;-webkit-border-radius: 1em}', minify=True),
-                         'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}')
+                         'a{-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em}')
 
     def test_transition(self):
         self.assertEqual(cssprefixer.process('''div {
       -webkit-transition: color .25s linear, -webkit-transform .15s linear .1s;
     }''', minify=False), '''div {
-    -webkit-transition: color 0.25s linear, -webkit-transform 0.15s linear 0.1s;
     -moz-transition: color 0.25s linear, -moz-transform 0.15s linear 0.1s;
     -o-transition: color 0.25s linear, -o-transform 0.15s linear 0.1s;
+    -webkit-transition: color 0.25s linear, -webkit-transform 0.15s linear 0.1s;
     transition: color 0.25s linear, transform 0.15s linear 0.1s
     }''')
 
@@ -93,13 +94,13 @@ class PrefixerTestCase(unittest.TestCase):
     transition: color .25s linear;
     transition: background-color .15s linear .1;
     }''', minify=False), '''div {
-    -webkit-transition: color 0.25s linear;
     -moz-transition: color 0.25s linear;
     -o-transition: color 0.25s linear;
+    -webkit-transition: color 0.25s linear;
     transition: color 0.25s linear;
-    -webkit-transition: background-color 0.15s linear 0.1;
     -moz-transition: background-color 0.15s linear 0.1;
     -o-transition: background-color 0.15s linear 0.1;
+    -webkit-transition: background-color 0.15s linear 0.1;
     transition: background-color 0.15s linear 0.1
     }''')
 
@@ -108,13 +109,13 @@ class PrefixerTestCase(unittest.TestCase):
     -webkit-transition-property: -webkit-transform, opacity, left;
     -webkit-transition-duration: rotatey(45deg), 2s, 4s;
     }''', minify=False), '''div {
-    -webkit-transition-property: -webkit-transform, opacity, left;
     -moz-transition-property: -moz-transform, opacity, left;
     -o-transition-property: -o-transform, opacity, left;
+    -webkit-transition-property: -webkit-transform, opacity, left;
     transition-property: transform, opacity, left;
-    -webkit-transition-duration: rotatey(45deg), 2s, 4s;
     -moz-transition-duration: rotatey(45deg), 2s, 4s;
     -o-transition-duration: rotatey(45deg), 2s, 4s;
+    -webkit-transition-duration: rotatey(45deg), 2s, 4s;
     transition-duration: rotatey(45deg), 2s, 4s
     }''')
 
@@ -134,18 +135,18 @@ class PrefixerTestCase(unittest.TestCase):
     box-shadow: #123456 0 0 10px;
     display: box;
 }''', minify=False), '''.my-class, #my-id {
-    -webkit-border-radius: 1em;
     -moz-border-radius: 1em;
+    -webkit-border-radius: 1em;
     border-radius: 1em;
-    -webkit-transition: all 1s ease;
     -moz-transition: all 1s ease;
     -o-transition: all 1s ease;
+    -webkit-transition: all 1s ease;
     transition: all 1s ease;
-    -webkit-box-shadow: #123456 0 0 10px;
     -moz-box-shadow: #123456 0 0 10px;
+    -webkit-box-shadow: #123456 0 0 10px;
     box-shadow: #123456 0 0 10px;
-    display: -webkit-box;
     display: -moz-box;
+    display: -webkit-box;
     display: box
     }''')
 
@@ -160,8 +161,8 @@ class PrefixerTestCase(unittest.TestCase):
     }
 }''', minify=False), '''@media screen and (max-device-width: 480px) {
     #book {
-        -webkit-border-radius: 1em;
         -moz-border-radius: 1em;
+        -webkit-border-radius: 1em;
         border-radius: 1em
         }
     }''')
@@ -195,11 +196,11 @@ article, aside, details, figcaption, figure, footer, header, hgroup, menu, nav, 
 class WebkitPrefixerTestCase(unittest.TestCase):
     def test_common(self):
         self.assertEqual(cssprefixer.process('a{-webkit-border-radius: 1em}', minify=True),
-                         'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}')
+                         'a{-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em}')
 
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-webkit-transform: rotate(10deg)}', minify=True),
-                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);-ms-transform:rotate(10deg);transform:rotate(10deg)}')
+                         'a{-moz-transform:rotate(10deg);-ms-transform:rotate(10deg);-o-transform:rotate(10deg);-webkit-transform:rotate(10deg);transform:rotate(10deg)}')
 
     def test_webkit(self):
         self.assertEqual(cssprefixer.process('a{-webkit-background-clip: padding-box}', minify=True),
@@ -211,20 +212,20 @@ class WebkitPrefixerTestCase(unittest.TestCase):
 
     def test_flexbox(self):
         self.assertEqual(cssprefixer.process('a{-webkit-display: box;}', minify=True),
-                         'a{display:-webkit-box;display:-moz-box;display:box}')
+                         'a{display:-moz-box;display:-webkit-box;display:box}')
 
     def test_mq_common(self):
         self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{-webkit-border-radius: 1em}}', minify=True),
-                         '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')
+                         '@media screen and (min-width:480px){a{-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em}}')
 
 class MozPrefixerTestCase(unittest.TestCase):
     def test_common(self):
         self.assertEqual(cssprefixer.process('a{-moz-border-radius: 1em}', minify=True),
-                         'a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}')
+                         'a{-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em}')
 
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-moz-transform: rotate(10deg)}', minify=True),
-                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);-ms-transform:rotate(10deg);transform:rotate(10deg)}')
+                         'a{-moz-transform:rotate(10deg);-ms-transform:rotate(10deg);-o-transform:rotate(10deg);-webkit-transform:rotate(10deg);transform:rotate(10deg)}')
 
     def test_moz_border_radius(self):
         self.assertEqual(cssprefixer.process('a{-moz-border-top-left-radius: 1em;-moz-border-top-right-radius: 1em;-moz-border-bottom-right-radius: 1em;-moz-border-bottom-left-radius: 1em;}', minify=True),
@@ -232,35 +233,35 @@ class MozPrefixerTestCase(unittest.TestCase):
 
     def test_flexbox(self):
         self.assertEqual(cssprefixer.process('a{-moz-display: box;}', minify=True),
-                         'a{display:-webkit-box;display:-moz-box;display:box}')
+                         'a{display:-moz-box;display:-webkit-box;display:box}')
 
     def test_mq_common(self):
         self.assertEqual(cssprefixer.process('@media screen and (min-width:480px){a{-moz-border-radius: 1em}}', minify=True),
-                         '@media screen and (min-width:480px){a{-webkit-border-radius:1em;-moz-border-radius:1em;border-radius:1em}}')
+                         '@media screen and (min-width:480px){a{-moz-border-radius:1em;-webkit-border-radius:1em;border-radius:1em}}')
 
 class OperaPrefixerTestCase(unittest.TestCase):
     def test_common_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-o-transform: rotate(10deg)}', minify=True),
-                         'a{-webkit-transform:rotate(10deg);-moz-transform:rotate(10deg);-o-transform:rotate(10deg);-ms-transform:rotate(10deg);transform:rotate(10deg)}')
+                         'a{-moz-transform:rotate(10deg);-ms-transform:rotate(10deg);-o-transform:rotate(10deg);-webkit-transform:rotate(10deg);transform:rotate(10deg)}')
 
     def test_ie_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-o-text-overflow: ellipsis}', minify=True),
-                         'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')
+                         'a{-ms-text-overflow:ellipsis;-o-text-overflow:ellipsis;text-overflow:ellipsis}')
 
 class IePrefixerTestCase(unittest.TestCase):
     def test_ie_and_opera(self):
         self.assertEqual(cssprefixer.process('a{-ms-text-overflow: ellipsis}', minify=True),
-                         'a{-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;text-overflow:ellipsis}')
+                         'a{-ms-text-overflow:ellipsis;-o-text-overflow:ellipsis;text-overflow:ellipsis}')
 
 class GradientTestCase(unittest.TestCase):
     def test_basic(self):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: linear-gradient(top, #444444, #999999);
     }''', minify=False), '''.box_gradient {
-    background-image: -webkit-linear-gradient(top, #444, #999);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     background-image: -moz-linear-gradient(top, #444, #999);
     background-image: -o-linear-gradient(top, #444, #999);
+    background-image: -webkit-linear-gradient(top, #444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
     }''')
@@ -269,10 +270,10 @@ class GradientTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: linear-gradient(#444444, #999999);
     }''', minify=False), '''.box_gradient {
-    background-image: -webkit-linear-gradient(#444, #999);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     background-image: -moz-linear-gradient(#444, #999);
     background-image: -o-linear-gradient(#444, #999);
+    background-image: -webkit-linear-gradient(#444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(#444, #999)
     }''')
@@ -281,10 +282,10 @@ class GradientTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -webkit-linear-gradient(top, #444444, #999999);
     }''', minify=False), '''.box_gradient {
-    background-image: -webkit-linear-gradient(top, #444, #999);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     background-image: -moz-linear-gradient(top, #444, #999);
     background-image: -o-linear-gradient(top, #444, #999);
+    background-image: -webkit-linear-gradient(top, #444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
     }''')
@@ -293,10 +294,10 @@ class GradientTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -webkit-linear-gradient(top, #444444, #999999), linear-gradient(top, black, white);
     }''', minify=False), '''.box_gradient {
-    background-image: -webkit-linear-gradient(top, #444, #999), -webkit-linear-gradient(top, black, white);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
     background-image: -moz-linear-gradient(top, #444, #999), -moz-linear-gradient(top, black, white);
     background-image: -o-linear-gradient(top, #444, #999), -o-linear-gradient(top, black, white);
+    background-image: -webkit-linear-gradient(top, #444, #999), -webkit-linear-gradient(top, black, white);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999), linear-gradient(top, black, white)
     }''')
@@ -305,10 +306,10 @@ class GradientTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -moz-linear-gradient(top, #444444, #999999);
     }''', minify=False), '''.box_gradient {
-    background-image: -webkit-linear-gradient(top, #444, #999);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     background-image: -moz-linear-gradient(top, #444, #999);
     background-image: -o-linear-gradient(top, #444, #999);
+    background-image: -webkit-linear-gradient(top, #444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
     }''')
@@ -317,10 +318,10 @@ class GradientTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -o-linear-gradient(top, #444444, #999999);
     }''', minify=False), '''.box_gradient {
-    background-image: -webkit-linear-gradient(top, #444, #999);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     background-image: -moz-linear-gradient(top, #444, #999);
     background-image: -o-linear-gradient(top, #444, #999);
+    background-image: -webkit-linear-gradient(top, #444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
     }''')
@@ -329,10 +330,10 @@ class GradientTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     }''', minify=False), '''.box_gradient {
-    background-image: -webkit-linear-gradient(#444, #999);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     background-image: -moz-linear-gradient(#444, #999);
     background-image: -o-linear-gradient(#444, #999);
+    background-image: -webkit-linear-gradient(#444, #999);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(#444, #999)
     }''')
@@ -341,10 +342,10 @@ class GradientTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-linear-gradient(top, black, white);
     }''', minify=False), '''.box_gradient {
-    background-image: -webkit-linear-gradient(#444, #999), -webkit-linear-gradient(top, black, white);
-    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
     background-image: -moz-linear-gradient(#444, #999), -moz-linear-gradient(top, black, white);
     background-image: -o-linear-gradient(#444, #999), -o-linear-gradient(top, black, white);
+    background-image: -webkit-linear-gradient(#444, #999), -webkit-linear-gradient(top, black, white);
+    background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(#444, #999), linear-gradient(top, black, white)
     }''')
@@ -354,10 +355,10 @@ class GradientTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background-image: url(images/background.png), linear-gradient(top, black, white);
     }''', minify=False), '''.box_gradient {
-    background-image: url(images/background.png), -webkit-linear-gradient(top, black, white);
-    background-image: url(images/background.png), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
     background-image: url(images/background.png), -moz-linear-gradient(top, black, white);
     background-image: url(images/background.png), -o-linear-gradient(top, black, white);
+    background-image: url(images/background.png), -webkit-linear-gradient(top, black, white);
+    background-image: url(images/background.png), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
     background-image: url(images/background.png), linear-gradient(top, black, white)
     }''')
@@ -373,10 +374,10 @@ class GradientTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
     }''', minify=False), '''.box_gradient {
-    background: -webkit-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white)), url(images/gradient.png) top center no-repeat, url(images/background.png);
     background: -moz-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
     background: -o-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
+    background: -webkit-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white)), url(images/gradient.png) top center no-repeat, url(images/background.png);
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png)
     }''')
@@ -385,10 +386,10 @@ class GradientTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('''.box_gradient {
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -moz-linear-gradient(top, #444444, #999999);
     }''', minify=False), '''.box_gradient {
-    background: -webkit-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -webkit-linear-gradient(top, #444, #999);
-    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white)), url(images/gradient.png) top center no-repeat, url(images/background.png), -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     background: -moz-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -moz-linear-gradient(top, #444, #999);
     background: -o-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -o-linear-gradient(top, #444, #999);
+    background: -webkit-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -webkit-linear-gradient(top, #444, #999);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white)), url(images/gradient.png) top center no-repeat, url(images/background.png), -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
     filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), linear-gradient(top, #444, #999)
     }''')

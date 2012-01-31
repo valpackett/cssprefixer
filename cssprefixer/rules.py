@@ -20,7 +20,7 @@ prefixRegex = re.compile('^(-o-|-ms-|-moz-|-webkit-)')
 
 
 class BaseReplacementRule(object):
-    vendor_prefixes = ['webkit', 'moz']
+    vendor_prefixes = ['moz', 'webkit']
 
     def __init__(self, prop):
         self.prop = prop
@@ -39,15 +39,15 @@ class BaseReplacementRule(object):
 
 
 class FullReplacementRule(BaseReplacementRule):
-    vendor_prefixes = BaseReplacementRule.vendor_prefixes + ['o', 'ms']
+    vendor_prefixes = sorted(BaseReplacementRule.vendor_prefixes + ['o', 'ms'])
 
 
 class BaseAndIEReplacementRule(BaseReplacementRule):
-    vendor_prefixes = BaseReplacementRule.vendor_prefixes + ['ms']
+    vendor_prefixes = sorted(BaseReplacementRule.vendor_prefixes + ['ms'])
 
 
 class BaseAndOperaReplacementRule(BaseReplacementRule):
-    vendor_prefixes = BaseReplacementRule.vendor_prefixes + ['o']
+    vendor_prefixes = sorted(BaseReplacementRule.vendor_prefixes + ['o'])
 
 
 class WebkitReplacementRule(BaseReplacementRule):
@@ -55,7 +55,7 @@ class WebkitReplacementRule(BaseReplacementRule):
 
 
 class OperaAndIEReplacementRule(BaseReplacementRule):
-    vendor_prefixes = ['o', 'ms']
+    vendor_prefixes = ['ms', 'o']
 
 
 class MozReplacementRule(BaseReplacementRule):
@@ -99,7 +99,7 @@ class DisplayReplacementRule(BaseReplacementRule):
 
 
 class TransitionReplacementRule(BaseReplacementRule):
-    vendor_prefixes = ['webkit', 'moz', 'o']
+    vendor_prefixes = ['moz', 'o', 'webkit']
 
     def __get_prefixed_prop(self, prefix=None):
         name = self.prop.name
@@ -147,7 +147,7 @@ class OpacityReplacementRule(BaseReplacementRule):
 
 
 class GradientReplacementRule(BaseReplacementRule):
-    vendor_prefixes = ['webkit', 'moz', 'o']
+    vendor_prefixes = ['moz', 'o', 'webkit']
 
     def __iter_values(self):
         valueSplit = self.prop.value.split(',')
