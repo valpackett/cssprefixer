@@ -15,7 +15,6 @@
 # limitations under the License.
 
 import unittest
-import google3
 import cssprefixer
 
 class PrefixerTestCase(unittest.TestCase):
