@@ -34,7 +34,10 @@ if __name__ == '__main__':
         for arg in sys.argv[1:]:
             if arg[:2] != '--':
                 result += cssprefixer.process(open(arg, 'r').read(), debug, minify)
-        print result
+        try:
+            print result
+        except UnicodeEncodeError:
+            print result.encode('utf8')
     else:
         print "Usage: cssprefixer <filenames> <options>"
         print "Options:" + reduce(lambda a, b: '%s --%s' % (a, b), options, '') # Javascript's Array.join, haha
