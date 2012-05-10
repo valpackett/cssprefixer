@@ -413,5 +413,10 @@ class GradientTestCase(unittest.TestCase):
     to {border-radius: 10px}
     }''', minify=False), "@-webkit-keyframes {\nfrom {\n    -webkit-border-radius: 2px;\n    border-radius: 2px\n    }\nto {\n    -webkit-border-radius: 10px;\n    border-radius: 10px\n    }\n}\n@-moz-keyframes {\nfrom {\n    -moz-border-radius: 2px;\n    border-radius: 2px\n    }\nto {\n    -moz-border-radius: 10px;\n    border-radius: 10px\n    }\n}\n@keyframes round {\n    from {\n        border-radius: 2px\n        } to {\n        border-radius: 10px\n        }\n    }")
 
+    def test_animation(self):
+        self.assertEqual(cssprefixer.process('a{animation: foo 1s}', minify=True),
+                         'a{-moz-animation:foo 1s;-ms-animation:foo 1s;-o-animation:foo 1s;-webkit-animation:foo 1s;animation:foo 1s}')
+
+
 if __name__ == '__main__':
     unittest.main()

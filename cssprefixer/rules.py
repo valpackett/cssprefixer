@@ -245,6 +245,7 @@ class GradientReplacementRule(BaseReplacementRule):
         return self.__get_prefixed_prop(values)
 
 rules = {
+    'animation': FullReplacementRule,
     'border-radius': BaseReplacementRule,
     'border-top-left-radius': BorderRadiusReplacementRule,
     'border-top-right-radius': BorderRadiusReplacementRule,
