@@ -22,13 +22,15 @@ from rules import prefixRegex
 def magic(ruleset, debug, minify, filt, parser):
     if isinstance(ruleset, cssutils.css.CSSUnknownRule):
         if ruleset.cssText.startswith('@keyframes'):
-            inner = parser.parseString(re.split(r'@keyframes\s?\w+\s?{(.*)}', ruleset.cssText.replace('\n', ''))[1])
+            parts = re.split(r'@keyframes\s?(\w+)\s?{(.*)}', ruleset.cssText.replace('\n', ''))
+            name = parts[1]
+            inner = parser.parseString(parts[2])
             # TODO: DRY, un-mess this up
             # BUG: doesn't work when minified
             s = '' if minify else '\n'
-            return '@-webkit-keyframes {' + s + \
+            return '@-webkit-keyframes %s {'%name + s + \
             ''.join([magic(rs, debug, minify, ['webkit'], parser) for rs in inner]) \
-            + '}' + s + '@-moz-keyframes {' + s + \
+            + '}' + s + '@-moz-keyframes %s {'%name + s + \
             ''.join([magic(rs, debug, minify, ['moz'], parser) for rs in inner]) \
             + '}' + s + ruleset.cssText
         elif ruleset.cssText.startswith('from') or ruleset.cssText.startswith('to'):
