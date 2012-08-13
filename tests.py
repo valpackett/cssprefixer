@@ -1,6 +1,6 @@
 #!/usr/bin/env python
 # CSSPrefixer
-# Copyright 2010 MyFreeWeb <me@myfreeweb.ru>
+# Copyright 2010-2012 Greg V. <floatboth@me.com>
 
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
