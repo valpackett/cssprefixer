@@ -6,33 +6,37 @@ It also can combine and minify your stylesheets.
 It supports many CSS3 stuff including keyframe animations, Flexbox and gradients.
 
 For example, this
-    #wrapper {
-        border-radius: 1em;
-        transform: rotate(45deg)
-    }
+```css
+#wrapper {
+    border-radius: 1em;
+    transform: rotate(45deg)
+}
+```
 
 becomes this:
-    #wrapper {
-        -moz-border-radius: 1em;
-        -webkit-border-radius: 1em;
-        border-radius: 1em;
-        -o-transform: rotate(45deg);
-        -moz-transform: rotate(45deg);
-        -webkit-transform: rotate(45deg);
-        transform: rotate(45deg)
-    }
+```css
+#wrapper {
+    -moz-border-radius: 1em;
+    -webkit-border-radius: 1em;
+    border-radius: 1em;
+    -o-transform: rotate(45deg);
+    -moz-transform: rotate(45deg);
+    -webkit-transform: rotate(45deg);
+    transform: rotate(45deg)
+}
+```
 
 Requires [cssutils](http://cthedot.de/cssutils/).
 
-## Contributors
-- [InScopeApps](https://github.com/InScopeApps)
-- you?
+## [Contributors](https://github.com/myfreeweb/cssprefixer/graphs/contributors)
 
 ## How to install 
 ### From PyPI
     $ sudo pip install cssprefixer
 
 ### from git
+    $ git clone git://github.com/myfreeweb/cssprefixer.git
+    $ cd cssprefixer
     $ sudo pip install cssutils
     $ sudo python setup.py install
 
