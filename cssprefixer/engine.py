@@ -19,11 +19,14 @@ from rules import rules as tr_rules
 from rules import prefixRegex
 
 
+keyframesRegex = re.compile(r'@keyframes\s?\w+\s?{(.*)}')
+blockRegex = re.compile(r'\w+\s?\{(.*)\}')
+
+
 def magic(ruleset, debug, minify, filt, parser):
     if isinstance(ruleset, cssutils.css.CSSUnknownRule):
         if ruleset.cssText.startswith('@keyframes'):
-            inner = parser.parseString(re.split(r'@keyframes\s?\w+\s?{(.*)}', ruleset.cssText.replace('\n', ''))[1])
-            # TODO: DRY, un-mess this up
+            inner = parser.parseString(keyframesRegex.split(ruleset.cssText.replace('\n', ''))[1])
             # BUG: doesn't work when minified
             s = '' if minify else '\n'
             return '@-webkit-keyframes {' + s + \
@@ -32,7 +35,8 @@ def magic(ruleset, debug, minify, filt, parser):
             ''.join([magic(rs, debug, minify, ['moz'], parser) for rs in inner]) \
             + '}' + s + ruleset.cssText
         elif ruleset.cssText.startswith('from') or ruleset.cssText.startswith('to'):
-            return ''.join([magic(rs, debug, minify, filt, parser) for rs in parser.parseString(re.sub(r'\w+\s?\{(.*)\}', r'\1', ruleset.cssText.replace('\n', ''))[1])])
+            return ''.join([magic(rs, debug, minify, filt, parser)
+                for rs in parser.parseString(blockRegex.sub(r'\1', ruleset.cssText.replace('\n', ''))[1])])
         else:
             return
     elif hasattr(ruleset, 'style'):  # Comments don't
