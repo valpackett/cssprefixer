@@ -32,7 +32,7 @@ def magic(ruleset, debug, minify, filt, parser):
             ''.join([magic(rs, debug, minify, ['moz'], parser) for rs in inner]) \
             + '}' + s + ruleset.cssText
         elif ruleset.cssText.startswith('from') or ruleset.cssText.startswith('to'):
-            return "".join([magic(rs, debug, minify, filt, parser) for rs in parser.parseString(re.sub(r'\w+\s?\{(.*)\}', r'\1', ruleset.cssText.replace('\n', ''))[1])])
+            return ''.join([magic(rs, debug, minify, filt, parser) for rs in parser.parseString(re.sub(r'\w+\s?\{(.*)\}', r'\1', ruleset.cssText.replace('\n', ''))[1])])
         else:
             return
     elif hasattr(ruleset, 'style'):  # Comments don't
@@ -90,7 +90,8 @@ def process(string, debug=False, minify=False, filt=['webkit', 'moz', 'o', 'ms']
         cssutils.ser.prefs.useMinified()
     else:
         cssutils.ser.prefs.useDefaults()
-    #use the passed in prefs
+
+    # use the passed in prefs
     for key, value in prefs.iteritems():
         if hasattr(cssutils.ser.prefs, key):
             cssutils.ser.prefs.__dict__[key] = value
@@ -102,11 +103,11 @@ def process(string, debug=False, minify=False, filt=['webkit', 'moz', 'o', 'ms']
         if cssText:
             results.append(cssText)
 
-    #format with newlines based on minify
+    # format with newlines based on minify
     joinStr = '' if minify else '\n'
 
     # Not using sheet.cssText - it's buggy:
     # it skips some prefixed properties.
     return joinStr.join(results).rstrip()
 
-__all__ = ('process')
+__all__ = []'process']
