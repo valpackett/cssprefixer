@@ -1,5 +1,7 @@
-# CSSPrefixer #
-A tool that rewrites your CSS files, adding vendor-prefixed versions of (popular) CSS3 rules. It also can combine and minify your stylesheets. **Keep your styles clean!**
+# CSSPrefixer
+A tool that rewrites your CSS files, adding vendor-prefixed versions of (popular) CSS3 rules.
+It also can combine and minify your stylesheets.
+**Keep your styles clean!**
 
 It supports many CSS3 stuff including keyframe animations, Flexbox and gradients.
 
@@ -22,22 +24,27 @@ becomes this:
 
 Requires [cssutils](http://cthedot.de/cssutils/).
 
-## Contributors ##
+## Contributors
 - [InScopeApps](https://github.com/InScopeApps)
 - you?
 
-## How to install ##
-    $ easy_install cssutils #or 'pip install cssutils' if you have pip
+## How to install 
+### From PyPI
+    $ sudo pip install cssprefixer
+
+### from git
+    $ sudo pip install cssutils
     $ sudo python setup.py install
 
-## How to use ##
-### From console ###
+## How to use
+### From console
 Like this:
 `cssprefixer my1.css my2.css --minify > result.css`
 
-### From Python ###
-    import cssprefixer
-    cssprefixer.process(open('my.css').read(), debug=False, minify=True)
-
-### With Django or Flask ###
+### From Python
+```python
+import cssprefixer
+cssprefixer.process(open('my.css').read(), debug=False, minify=True)
+````
+### With Django or Flask
 or any other Python web framework — latest git version of [webassets](http://github.com/miracle2k/webassets) has a filter for cssprefixer.
