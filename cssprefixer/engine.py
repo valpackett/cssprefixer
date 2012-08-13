@@ -110,4 +110,4 @@ def process(string, debug=False, minify=False, filt=['webkit', 'moz', 'o', 'ms']
     # it skips some prefixed properties.
     return joinStr.join(results).rstrip()
 
-__all__ = []'process']
+__all__ = ['process']

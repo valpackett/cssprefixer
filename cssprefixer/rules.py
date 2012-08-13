@@ -126,26 +126,6 @@ class TransitionReplacementRule(BaseReplacementRule):
         return self.__get_prefixed_prop()
 
 
-class OpacityReplacementRule(BaseReplacementRule):
-    def get_prefixed_props(self, filt):
-        if 'ms' in filt:
-            ieValue = float(self.prop.value) * 100
-            yield cssutils.css.Property(
-                    name='-ms-filter',
-                    value='"progid:DXImageTransform.Microsoft.Alpha(Opacity=%d)"' % ieValue,
-                    priority=self.prop.priority
-                    )
-            yield cssutils.css.Property(
-                    name='filter',
-                    value='alpha(opacity=%d)' % ieValue,
-                    priority=self.prop.priority
-                    )
-
-    @staticmethod
-    def should_prefix():
-        return False
-
-
 class GradientReplacementRule(BaseReplacementRule):
     vendor_prefixes = ['moz', 'o', 'webkit']
 
@@ -228,15 +208,6 @@ class GradientReplacementRule(BaseReplacementRule):
                             value=', '.join(newValues),
                             priority=self.prop.priority
                             )
-            #add an ie gradient if there is gradient data
-            for value in values:
-                if isinstance(value, dict):
-                    yield cssutils.css.Property(
-                            name='filter',
-                            value='"progid:DXImageTransform.Microsoft.gradient(startColorStr=%(start)s, EndColorStr=%(end)s)"' % value,
-                            priority=self.prop.priority
-                            )
-                    break
         else:
             yield None
 
@@ -294,7 +265,6 @@ rules = {
     'transform-origin': FullReplacementRule,
 
     'display': DisplayReplacementRule,
-    'opacity': OpacityReplacementRule,
     'appearance': WebkitReplacementRule,
     'hyphens': BaseReplacementRule,
 }

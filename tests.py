@@ -118,15 +118,6 @@ class PrefixerTestCase(unittest.TestCase):
     transition-duration: rotatey(45deg), 2s, 4s
     }''')
 
-    def test_opacity(self):
-        self.assertEqual(cssprefixer.process('''a {
-    opacity: 0.25;
-    }''', minify=False), '''a {
-    -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=25)";
-    filter: alpha(opacity=25);
-    opacity: 0.25
-    }''')
-
     def test_no_mini(self):
         self.assertEqual(cssprefixer.process('''.my-class, #my-id {
     border-radius: 1em;
@@ -261,7 +252,6 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(top, #444, #999);
     background-image: -webkit-linear-gradient(top, #444, #999);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
     }''')
 
@@ -273,7 +263,6 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(#444, #999);
     background-image: -webkit-linear-gradient(#444, #999);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(#444, #999)
     }''')
 
@@ -285,7 +274,6 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(top, #444, #999);
     background-image: -webkit-linear-gradient(top, #444, #999);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
     }''')
 
@@ -297,7 +285,6 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(top, #444, #999), -o-linear-gradient(top, black, white);
     background-image: -webkit-linear-gradient(top, #444, #999), -webkit-linear-gradient(top, black, white);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999), linear-gradient(top, black, white)
     }''')
 
@@ -309,7 +296,6 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(top, #444, #999);
     background-image: -webkit-linear-gradient(top, #444, #999);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
     }''')
 
@@ -321,7 +307,6 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(top, #444, #999);
     background-image: -webkit-linear-gradient(top, #444, #999);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(top, #444, #999)
     }''')
 
@@ -333,7 +318,6 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(#444, #999);
     background-image: -webkit-linear-gradient(#444, #999);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(#444, #999)
     }''')
 
@@ -345,7 +329,6 @@ class GradientTestCase(unittest.TestCase):
     background-image: -o-linear-gradient(#444, #999), -o-linear-gradient(top, black, white);
     background-image: -webkit-linear-gradient(#444, #999), -webkit-linear-gradient(top, black, white);
     background-image: -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999)), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=#444, EndColorStr=#999)";
     background-image: linear-gradient(#444, #999), linear-gradient(top, black, white)
     }''')
 
@@ -358,7 +341,6 @@ class GradientTestCase(unittest.TestCase):
     background-image: url(images/background.png), -o-linear-gradient(top, black, white);
     background-image: url(images/background.png), -webkit-linear-gradient(top, black, white);
     background-image: url(images/background.png), -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white));
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
     background-image: url(images/background.png), linear-gradient(top, black, white)
     }''')
 
@@ -377,7 +359,6 @@ class GradientTestCase(unittest.TestCase):
     background: -o-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
     background: -webkit-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white)), url(images/gradient.png) top center no-repeat, url(images/background.png);
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png)
     }''')
 
@@ -389,7 +370,6 @@ class GradientTestCase(unittest.TestCase):
     background: -o-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -o-linear-gradient(top, #444, #999);
     background: -webkit-linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), -webkit-linear-gradient(top, #444, #999);
     background: -webkit-gradient(linear, left top, left bottom, color-stop(0, black), color-stop(1, white)), url(images/gradient.png) top center no-repeat, url(images/background.png), -webkit-gradient(linear, left top, left bottom, color-stop(0, #444), color-stop(1, #999));
-    filter: "progid:DXImageTransform.Microsoft.gradient(startColorStr=black, EndColorStr=white)";
     background: linear-gradient(top, black, white), url(images/gradient.png) top center no-repeat, url(images/background.png), linear-gradient(top, #444, #999)
     }''')
 
