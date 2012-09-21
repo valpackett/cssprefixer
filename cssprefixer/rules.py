@@ -136,7 +136,8 @@ class GradientReplacementRule(BaseReplacementRule):
         while(True):
             if index >= len(valueSplit):
                 break
-            snip = prefixRegex.sub('', valueSplit[index].strip())
+            rawValue = valueSplit[index].strip()
+            snip = prefixRegex.sub('', rawValue)
             if snip.startswith('linear-gradient'):
                 values = [re.sub('^linear-gradient\(', '', snip)]
                 if valueSplit[index + 1].strip().endswith(')'):
@@ -164,7 +165,7 @@ class GradientReplacementRule(BaseReplacementRule):
                 index += 7
             else:
                 # not a gradient so just yield the raw string
-                yield snip
+                yield rawValue
                 index += 1
 
     def __get_prefixed_prop(self, values, prefix=None):
