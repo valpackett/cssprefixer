@@ -50,6 +50,14 @@ class PrefixerTestCase(unittest.TestCase):
         self.assertEqual(cssprefixer.process('a{border-top-left-radius: 1em;border-top-right-radius: 1em;border-bottom-right-radius: 1em;border-bottom-left-radius: 1em;}', minify=True),
                          'a{-webkit-border-top-left-radius:1em;-moz-border-radius-topleft:1em;border-top-left-radius:1em;-webkit-border-top-right-radius:1em;-moz-border-radius-topright:1em;border-top-right-radius:1em;-webkit-border-bottom-right-radius:1em;-moz-border-radius-bottomright:1em;border-bottom-right-radius:1em;-webkit-border-bottom-left-radius:1em;-moz-border-radius-bottomleft:1em;border-bottom-left-radius:1em}')
 
+    def test_cursor_zoom_in(self):
+        self.assertEqual(cssprefixer.process('a{cursor: zoom-in;}', minify=True),
+                         'a{cursor:-moz-zoom-in;cursor:-webkit-zoom-in;cursor:zoom-in}')
+
+    def test_cursor_zoom_out(self):
+        self.assertEqual(cssprefixer.process('a{cursor: zoom-out;}', minify=True),
+                         'a{cursor:-moz-zoom-out;cursor:-webkit-zoom-out;cursor:zoom-out}')
+
     def test_flexbox(self):
         self.assertEqual(cssprefixer.process('a{display: box;}', minify=True),
                          'a{display:-moz-box;display:-webkit-box;display:box}')
