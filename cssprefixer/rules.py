@@ -83,6 +83,20 @@ class BorderRadiusReplacementRule(BaseReplacementRule):
                     )
 
 
+class CursorReplacementRule(BaseReplacementRule):
+    """
+    Experimental cursor values.
+    """
+    def get_prefixed_props(self, filt):
+        if self.prop.value in ('zoom-in', 'zoom-out'):
+            for prefix in [p for p in self.vendor_prefixes if p in filt]:
+                yield cssutils.css.Property(
+                        name='cursor',
+                        value='-%s-%s' % (prefix, self.prop.value),
+                        priority=self.prop.priority
+                        )
+
+
 class DisplayReplacementRule(BaseReplacementRule):
     """
     Flexible Box Model stuff.
@@ -265,6 +279,7 @@ rules = {
     'transform': FullReplacementRule,
     'transform-origin': FullReplacementRule,
 
+    'cursor': CursorReplacementRule,
     'display': DisplayReplacementRule,
     'appearance': WebkitReplacementRule,
     'hyphens': BaseReplacementRule,
